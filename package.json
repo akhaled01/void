@@ -5,7 +5,9 @@
   "description": "An unopinionated JS framework",
   "main": "App.jsx",
   "scripts": {
-    "test": "ls"
+    "build": "webpack build",
+    "build:prod": "webpack build --mode production",
+    "dev": "webpack serve"
   },
   "author": "akhaled01",
   "license": "ISC",
