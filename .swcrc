@@ -6,8 +6,8 @@
     },
     "transform": {
       "react": { // NOT USING REACT ON ALLAH BRO
-        "runtime": "classic", // Set to "classic" to use a custom createElement
-        "pragma": "createElement" // This tells SWC to use your custom createElement function
+        "runtime": "classic",
+        "pragma": "createElement" // This tells SWC to use our custom createElement function
       }
     }
   },

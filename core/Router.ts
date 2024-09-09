@@ -1,4 +1,6 @@
 export class Router {
+  routes: any;
+  root: HTMLElement | null;
   constructor(routes) {
     this.routes = routes;
     this.root = document.getElementById("root"); // Or any other container
@@ -10,9 +12,10 @@ export class Router {
     this.handleRouteChange();
     window.addEventListener("popstate", this.handleRouteChange);
     document.body.addEventListener("click", (event) => {
-      if (event.target.tagName === "A") {
+      const target = event.target as HTMLElement; // Type assertion
+      if (target.tagName === "A") {
         event.preventDefault();
-        const href = event.target.getAttribute("href");
+        const href = (target as HTMLAnchorElement).getAttribute("href");
         window.history.pushState(null, "", href);
         this.handleRouteChange();
       }
@@ -43,4 +46,3 @@ export class Router {
     }
   }
 }
-

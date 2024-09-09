@@ -6,13 +6,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default {
-  entry: "./src/index.js",
+  entry: "./src/index.ts",
   output: {
     path: _resolve(__dirname, "dist"),
     filename: "bundle.js",
   },
   resolve: {
-    extensions: [".js", ".jsx"],
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
     alias: {
       Components: _resolve(__dirname, "src/components/"),
       Core: _resolve(__dirname, "core/"),
@@ -21,10 +21,46 @@ export default {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.(ts|tsx)$/,
+        use: [
+          {
+            loader: "ts-loader",
+            options: {
+              transpileOnly: true, // Use SWC for transpilation
+            },
+          },
+          {
+            loader: "swc-loader",
+            options: {
+              jsc: {
+                parser: {
+                  syntax: "typescript",
+                  jsx: true,
+                },
+              },
+            },
+          },
+        ],
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
           loader: "swc-loader",
+          options: {
+            jsc: {
+              parser: {
+                syntax: "ecmascript",
+                jsx: true,
+              },
+              transform: {
+                react: {
+                  runtime: "automatic",
+                },
+              },
+            },
+          },
         },
       },
     ],

@@ -1,6 +1,15 @@
-export const createElement = (tag, props = {}, ...children) => {
+type Props = {
+  [key: string]: any;
+};
+
+type ElementOrString = HTMLElement | string;
+
+export const createElement = (
+  tag: string | ((props: Props) => HTMLElement),
+  props: Props = {},
+  ...children: ElementOrString[]
+): HTMLElement => {
   if (typeof tag === "function") {
-    // If tag is a function, it's a custom component
     return tag(props);
   }
 
@@ -15,7 +24,7 @@ export const createElement = (tag, props = {}, ...children) => {
       element.addEventListener(key.slice(2).toLowerCase(), props[key]);
     } else {
       // Set other properties
-      element[key] = props[key];
+      element.setAttribute(key, props[key]);
     }
   });
 
@@ -24,7 +33,7 @@ export const createElement = (tag, props = {}, ...children) => {
     children.forEach((child) => {
       if (typeof child === "string") {
         element.appendChild(document.createTextNode(child));
-      } else {
+      } else if (child instanceof HTMLElement) {
         element.appendChild(child);
       }
     });
@@ -32,4 +41,3 @@ export const createElement = (tag, props = {}, ...children) => {
 
   return element;
 };
-

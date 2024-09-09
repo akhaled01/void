@@ -1,4 +1,5 @@
-import { createElement } from "../../core/createElement.js"
+/** @jsx createElement */
+import { createElement } from "../../core/createElement"
 
 const Home = () => {
     return (
