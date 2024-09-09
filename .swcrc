@@ -5,8 +5,9 @@
       "jsx": true
     },
     "transform": {
-      "react": {
-        "runtime": "automatic"
+      "react": { // NOT USING REACT ON ALLAH BRO
+        "runtime": "classic", // Set to "classic" to use a custom createElement
+        "pragma": "createElement" // This tells SWC to use your custom createElement function
       }
     }
   },
