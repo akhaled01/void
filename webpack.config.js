@@ -1,4 +1,5 @@
 import HtmlWebpackPlugin from "html-webpack-plugin";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import { resolve as _resolve, join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -63,12 +64,17 @@ export default {
           },
         },
       },
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
+      },
     ],
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: "./index.html", // Copy index.html to dist/
     }),
+    new MiniCssExtractPlugin(),
   ],
   devServer: {
     static: {

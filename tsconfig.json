@@ -11,6 +11,6 @@
     "esModuleInterop": true, // Enable compatibility with CommonJS modules
     "skipLibCheck": true, // Skip type checking of declaration files
   },
-  "include": ["src/**/*", "core/**/*"], // Include all files in src
+  "include": ["src/**/*", "core/**/*", "*.d.ts"],
   "exclude": ["node_modules", "dist"] // Exclude node_modules and dist
 }
