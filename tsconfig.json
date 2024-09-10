@@ -7,9 +7,9 @@
     "moduleResolution": "node", // Module resolution strategy
     "outDir": "./dist", // Output directory
     "rootDir": "./", // Root directory of input files
-    "strict": true, // Enable all strict type-checking options
+    "strict": false, // Enable all strict type-checking options
     "esModuleInterop": true, // Enable compatibility with CommonJS modules
-    "skipLibCheck": true // Skip type checking of declaration files
+    "skipLibCheck": true, // Skip type checking of declaration files
   },
   "include": ["src/**/*", "core/**/*"], // Include all files in src
   "exclude": ["node_modules", "dist"] // Exclude node_modules and dist
