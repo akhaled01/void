@@ -1,5 +1,6 @@
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import CopyPlugin from "copy-webpack-plugin";
 import { resolve as _resolve, join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -75,6 +76,14 @@ export default {
       template: "./index.html", // Copy index.html to dist/
     }),
     new MiniCssExtractPlugin(),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: _resolve(__dirname, "globals.css"), // Source file
+          to: _resolve(__dirname, "dist/globals.css"), // Destination file
+        },
+      ],
+    }),
   ],
   devServer: {
     static: {

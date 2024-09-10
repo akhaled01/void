@@ -1,8 +1,11 @@
 export class Router {
   routes: any;
   root: HTMLElement | null;
+  pageContext: __WebpackModuleApi.RequireContext;
+
   constructor(routes) {
     this.routes = routes;
+    this.pageContext = require.context("../src/app", true, /page\.tsx$/); // Targeting .tsx files
     this.root = document.getElementById("root"); // Or any other container
     this.handleRouteChange = this.handleRouteChange.bind(this); // Ensure proper `this` context
     this.init();
@@ -22,13 +25,16 @@ export class Router {
     });
   }
 
-  handleRouteChange() {
-    const path = window.location.pathname;
-    const Component = this.routes[path] || this.routes["*"]; // Fallback to NotFound component
-    if (typeof Component === "function") {
-      this.render(Component);
-    } else {
-      console.error(`No component found for path: ${path}`);
+  async handleRouteChange() {
+    const path =
+      window.location.pathname === "/" ? "" : window.location.pathname;
+    const componentPath = `.${path}/page.tsx`;
+
+    try {
+      const Page = this.pageContext(componentPath).default;
+      this.render(Page);
+    } catch (error) {
+      console.error(`Error loading component for path: ${path}`, error);
     }
   }
 

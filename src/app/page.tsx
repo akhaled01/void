@@ -2,7 +2,7 @@
 import { createElement } from "../../core/createElement"
 import  "../css/home.css"
 
-const Home = () => {
+const Page = () => {
   return (
     <div class="aab">
       <p>Home</p>
@@ -11,4 +11,4 @@ const Home = () => {
   );
 }
 
-export default Home
+export default Page;
