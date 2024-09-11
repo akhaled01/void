@@ -1,4 +1,4 @@
-import { createElement } from "./core/createElement";
+import { createElement } from "./core/vDOM/createElement";
 
 // Define JSX namespace and IntrinsicElements interface
 declare namespace JSX {
