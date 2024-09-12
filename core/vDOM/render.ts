@@ -25,14 +25,18 @@ export const render = (vNode: VNode): HTMLElement | Text => {
                 } else if (value === null) {
                     element.removeAttribute(key);
                 } else if (key.startsWith('osiris:')) {
-                    const signalID = key.replace("osiris:", "");
-                    const signal = signalRegistry.get(signalID)
+                    const signalID = key.replace('osiris:', '');                    
+                    const signal = signalRegistry.get(signalID);
+
                     if (!signal) {
-                        throw new Error(`there is no signal associated with ${key}`)
+                        throw new Error(`No signal associated with ${signalID}`);
                     }
-                    signal.bind(element)
-                }
-                else {
+
+                    // Bind to a specific key if provided
+                    if (value) {
+                        signal.bind(element, value);
+                    }
+                } else {
                     element.setAttribute(key, value);
                 }
             }

@@ -3,65 +3,49 @@ import { diff } from "./vDOM/diff";
 import { patch } from "./vDOM/patch";
 import { VNode } from "./vDOM/types";
 
-/**
- * Signal class to manage reactive values and update the DOM when the value changes.
- * 
- * @template T - The type of the value held by the signal.
- */
-export class Signal<T> {
-  private value: T;
+export class Signal<T extends object> {
+  private proxyValue: T;
   private listeners: Set<(value: T) => void>;
-  private element: HTMLElement | null = null;
+  private bindings: Map<keyof T, HTMLElement[]> = new Map(); // Track bindings for each key separately
 
-  /**
-   * Creates an instance of Signal.
-   * @param {T} initialValue - The initial value of the signal.
-   */
   constructor(initialValue: T) {
-    this.value = initialValue;
     this.listeners = new Set();
+    this.proxyValue = this.makeReactive(initialValue); // Make object reactive
   }
 
-  /**
-   * Get the current value of the signal.
-   * @returns {T} The current value.
-   * @example
-   * const mySignal = new Signal(5);
-   * console.log(mySignal.get()); // 5
-   */
+  // Make the object reactive using Proxy
+  private makeReactive(value: T): T {
+    const self = this;
+
+    return new Proxy(value, {
+      get(target, prop) {
+        const result = Reflect.get(target, prop);
+
+        // Ensure result is an object, not null, and not an array
+        if (result && typeof result === "object" && !Array.isArray(result)) {
+          return self.makeReactive(result as T); // Ensure type safety
+        }
+
+        return result;
+      },
+      set(target, prop, newValue) {
+        const oldValue = target[prop as keyof T];
+        if (oldValue !== newValue) {
+          Reflect.set(target, prop, newValue);
+          self.notifyListeners(); // Notify listeners on any property change
+          self.update(prop as keyof T); // Re-render the bound elements for this property
+        }
+        return true;
+      }
+    });
+  }
+
+  // Get the current reactive value
   get(): T {
-    return this.value;
+    return this.proxyValue;
   }
 
-  /**
-   * Set a new value to the signal. If the value is different, it notifies all listeners and updates the DOM.
-   * 
-   * @param {T} newValue - The new value to set.
-   * @example
-   * const mySignal = new Signal(5);
-   * mySignal.set(10); // Updates the value to 10 and triggers listeners.
-   */
-  set(newValue: T): void {
-    if (this.value !== newValue) {
-      this.value = newValue;
-      this.listeners.forEach(listener => listener(this.value));
-      this.update();
-    }
-  }
-
-  /**
-   * Subscribe to changes in the signal. The provided listener function is called when the signal value changes.
-   * 
-   * @param {(value: T) => void} listener - The listener function to call when the signal changes.
-   * @returns {() => void} A function to unsubscribe the listener.
-   * @example
-   * const mySignal = new Signal(5);
-   * const unsubscribe = mySignal.subscribe((newValue) => {
-   *   console.log('Value changed to:', newValue);
-   * });
-   * mySignal.set(10); // Logs 'Value changed to: 10'
-   * unsubscribe(); // Stops listening to changes.
-   */
+  // Subscribe to changes
   subscribe(listener: (value: T) => void): () => void {
     this.listeners.add(listener);
     return () => {
@@ -69,68 +53,63 @@ export class Signal<T> {
     };
   }
 
-  /**
-   * Bind the signal to an HTML element. This element will be re-rendered when the signal changes.
-   * It is not meant to be used directly
-   * 
-   * @param {HTMLElement} element - The element to bind to the signal.
-   * @example
-   * const mySignal = genSignal(5, "a");
-   * return <p osiris:a>{mySignal.get()}</p>
-   */
-  bind(element: HTMLElement): void {
-    this.element = element;
-    this.update(); // Initial render
+  // Notify all listeners when a value changes
+  private notifyListeners(): void {
+    this.listeners.forEach(listener => listener(this.proxyValue));
   }
 
-  /**
-   * Internal method to update the DOM based on the signal value.
-   * Captures the current attributes and children of the bound element, and applies changes to it.
-   * @private
-   */
-  private update(): void {
-    if (this.element) {
-      // Capture the existing attributes and children of the element
-      const currentProps: { [key: string]: any } = Array.from(this.element.attributes).reduce((props, attr) => {
-        props[attr.name] = attr.value;
-        return props;
-      }, {} as { [key: string]: any });
-
-      const currentChildren = Array.from(this.element.childNodes).map(child => {
-        if (child.nodeType === Node.TEXT_NODE) {
-          return (child as Text).textContent || "";
-        } else if (child.nodeType === Node.ELEMENT_NODE) {
-          return createElement(
-            (child as HTMLElement).tagName.toLowerCase(),
-            Array.from((child as HTMLElement).attributes).reduce((attrs, attr) => {
-              attrs[attr.name] = attr.value;
-              return attrs;
-            }, {} as { [key: string]: any }),
-            ...Array.from((child as HTMLElement).childNodes).map(c =>
-              c.nodeType === Node.TEXT_NODE
-                ? (c as Text).textContent || ""
-                : createElement((c as HTMLElement).tagName.toLowerCase(), {}, (c as HTMLElement).innerHTML)
-            )
-          );
-        }
-        return "";
-      });
-
-      const newVNode: VNode = createElement(
-        this.element.tagName.toLowerCase(),
-        { ...currentProps, className: this.element.className },
-        `${this.value}`,
-      );
-
-      const oldVNode: VNode = createElement(
-        this.element.tagName.toLowerCase(),
-        { ...currentProps },
-        ...currentChildren
-      );
-
-      const patches = diff(oldVNode, newVNode);
-      patch(this.element, patches);
+  // Bind the signal to an element and a specific property
+  bind(element: HTMLElement, key: keyof T): void {
+    if (!this.bindings.has(key)) {
+      this.bindings.set(key, []);
     }
+
+    // Add the element to the list of bindings for the given key
+    const elements = this.bindings.get(key);
+    elements?.push(element);
+
+    // Initial render for this key
+    this.update(key);
+  }
+
+  // Update the DOM when the signal value changes for a specific key
+  private update(key: keyof T): void {
+    const boundElements = this.bindings.get(key);
+    if (boundElements) {
+      boundElements.forEach(element => {
+        // Update element's content with the new value of the bound key
+        element.textContent = String(this.proxyValue[key]);
+
+        // Execute rendering logic
+        this.performDOMRender(element, key);
+      });
+    }
+  }
+
+  // Internal method to perform rendering for the given element and key
+  private performDOMRender(element: HTMLElement, key: keyof T): void {
+    const currentProps: { [key: string]: any } = Array.from(element.attributes).reduce((props, attr) => {
+      props[attr.name] = attr.value;
+      return props;
+    }, {} as { [key: string]: any });
+
+    // Create new virtual node with the updated value for the bound key
+    const newVNode: VNode = createElement(
+      element.tagName.toLowerCase(),
+      { ...currentProps, className: element.className },
+      `${this.proxyValue[key]}`
+    );
+
+    // Create old virtual node with current element state
+    const oldVNode: VNode = createElement(
+      element.tagName.toLowerCase(),
+      { ...currentProps },
+      element.textContent || ''
+    );
+
+    // Perform diff and patch
+    const patches = diff(oldVNode, newVNode);
+    patch(element, patches);
   }
 }
 
@@ -138,32 +117,22 @@ export class Signal<T> {
  * A global registry to keep track of signals and their associated IDs.
  * 
  * @type {Map<string, Signal<any>>}
- * @example
- * // To store a signal:
- * const signal = new Signal(5);
- * signalRegistry.set('signal-id', signal);
- * 
- * // To retrieve a signal:
- * const retrievedSignal = signalRegistry.get('signal-id');
  */
-export let signalRegistry: Map<string, Signal<any>> = new Map<string, Signal<any>>()
+export let signalRegistry: Map<string, Signal<any>> = new Map<string, Signal<any>>();
 
 /**
- * Generate a new signal and adds it to the global registry.
+ * Generate a new signal and add it to the global registry.
  * 
  * @template T - The type of the signal value.
  * @param {T} initialValue - The initial value for the signal.
  * @param {string} id - A unique ID to associate with the signal.
  * @returns {Signal<T>} The newly created signal.
- * @example
- * const mySignal = genSignal(5, 'mySignal');
- * mySignal.set(10); // Updates the value to 10
  */
-export const genSignal = <T>(initialValue: T, id: string): Signal<T> => {
+export const genSignal = <T extends object>(initialValue: T, id: string): Signal<T> => {
   const signal = new Signal<T>(initialValue);
 
   if (signalRegistry.get(id)) {
-    throw new Error("signal ids must be unique")
+    throw new Error("Signal IDs must be unique");
   }
 
   signalRegistry.set(id, signal);

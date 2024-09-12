@@ -4,18 +4,29 @@ import { genSignal } from "../../core/signal";
 import "../css/home.css";
 
 const Page = () => {
-  const a = genSignal(0, "a")
+  const signal = genSignal({ name: "Osiris", age: 25 }, "user");
+  const anotherSignal = genSignal({ val: 90 }, "anotha");
 
-  const incA = () => {
-    a.set(a.get() + 1)
+  const updateName = () => {
+    signal.get().name += "o";
+  };
+
+  const updateAge = () => {
+    signal.get().age += 1;
+  };
+
+  const updateVal = () => {
+    anotherSignal.get().val += 4
   }
 
   return (
     <div class="aab">
-      <p>Home</p>
-      <a href="/about">go to about :)</a>
-      <p osiris:a></p>
-      <button onClick={incA}>huh</button>
+      <p osiris:user="name"></p>
+      <p osiris:user="age"></p>
+      <p osiris:anotha="val"></p>
+      <button onClick={updateName}>Update Name</button>
+      <button onClick={updateAge}>Update Age</button>
+      <button onClick={updateVal}>update Val</button>
     </div>
   );
 };
