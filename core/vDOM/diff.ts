@@ -16,10 +16,9 @@ export const diff = (oldNode: VNode | string | undefined, newNode: VNode | strin
 
 // Walk through old and new nodes to compare and generate patches
 const walk = (oldNode: VNode | string | undefined, newNode: VNode | string | undefined, patches: Patch[], index: number) => {
-    if (!oldNode) {
-        if (newNode && typeof newNode !== "string") {
-            patches.push({ type: 'CREATE', newNode, index });
-        }
+    if (!oldNode && newNode && typeof newNode !== 'string') {
+        console.log("CREATE patch added for index", index); // Debugging log
+        patches.push({ type: "CREATE", newNode, index });
     } else if (!newNode) {
         patches.push({ type: 'REMOVE', index });
     } else if (typeof oldNode === 'string' && typeof newNode === 'string') {

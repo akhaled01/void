@@ -7,7 +7,7 @@ import { VNode, ElementVNode, TextVNode } from './types';
  * @param vNode - The virtual DOM node to render.
  * @returns The corresponding real DOM node.
  */
-export const render = (vNode: VNode): HTMLElement | Text => {
+export const render = (vNode: VNode): HTMLElement | Text | DocumentFragment => {
     if (isTextVNode(vNode)) {
         const textVNode = vNode as TextVNode;
         return document.createTextNode(textVNode.content);
@@ -25,7 +25,7 @@ export const render = (vNode: VNode): HTMLElement | Text => {
                 } else if (value === null) {
                     element.removeAttribute(key);
                 } else if (key.startsWith('osiris:')) {
-                    const signalID = key.replace('osiris:', '');                    
+                    const signalID = key.replace('osiris:', '');
                     const signal = signalRegistry.get(signalID);
 
                     if (!signal) {
@@ -34,7 +34,25 @@ export const render = (vNode: VNode): HTMLElement | Text => {
 
                     // Bind to a specific key if provided
                     if (value) {
-                        signal.bind(element, value);
+                        const keyOrIndex = isNaN(Number(value)) ? value : Number(value);
+
+                        // Check if the signal is an array
+                        if (Array.isArray(signal.get())) {
+                            const fragment = document.createDocumentFragment();
+
+                            signal.get().forEach((item: string, index: string | number | symbol) => {
+                                const clonedElement = element.cloneNode(true) as HTMLElement;
+                                signal.bind(clonedElement, index); // Bind each item in the array to the element
+
+                                clonedElement.textContent = item
+
+                                fragment.appendChild(clonedElement);
+                            });
+
+                            return fragment; // Return the fragment containing all cloned elements
+                        } else {
+                            signal.bind(element, keyOrIndex);
+                        }
                     }
                 } else {
                     element.setAttribute(key, value);
