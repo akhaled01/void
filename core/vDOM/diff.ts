@@ -64,16 +64,20 @@ const diffProps = (oldProps: { [key: string]: any }, newProps: { [key: string]: 
     const patches: { [key: string]: any } = {};
 
     // Add or update props
-    for (const key in newProps) {
-        if (oldProps[key] !== newProps[key]) {
-            patches[key] = newProps[key];
+    if (newProps) {
+        for (const key in newProps) {
+            if (oldProps[key] !== newProps[key]) {
+                patches[key] = newProps[key];
+            }
         }
     }
 
     // Remove old props that are not in the new node
-    for (const key in oldProps) {
-        if (!(key in newProps)) {
-            patches[key] = null;
+    if (oldProps && newProps) {
+        for (const key in oldProps) {
+            if (!(key in newProps)) {
+                patches[key] = null;
+            }
         }
     }
 

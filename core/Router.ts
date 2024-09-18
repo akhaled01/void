@@ -40,13 +40,13 @@ export class Router {
     try {
       const Page = this.pageContext(componentPath).default;
       this.updateRoute(Page); // Use vDOM update method
-    } catch (error) {
+    } catch (error) {      
       console.error(`Error loading component for path: ${path}`, error);
     }
   }
 
   updateRoute(Page: () => VNode) {
-    const newVNode = Page(); // Get the virtual DOM for the new page
+    const newVNode = Page(); // Get the virtual DOM for the new page    
 
     if (this.currentVNode === null) {
       // Initial render if no current vDOM
@@ -56,7 +56,7 @@ export class Router {
       }
     } else {
       // If there is already a current vDOM, perform diff and patch
-      const patches = diff(this.currentVNode, newVNode); // Calculate the differences
+      const patches = diff(this.currentVNode, newVNode); // Calculate the differences      
       if (this.root) {
         patch(this.root, patches); // Apply the patches to update the real DOM
       }

@@ -1,5 +1,5 @@
-import { signalRegistry } from '../signal';
-import { VNode, ElementVNode, TextVNode } from './types';
+import { signalRegistry } from "../signal";
+import { VNode, ElementVNode, TextVNode } from "./types";
 
 /**
  * Renders a VNode to a real DOM node.
@@ -12,74 +12,79 @@ export const render = (vNode: VNode): HTMLElement | Text | DocumentFragment => {
         const textVNode = vNode as TextVNode;
         return document.createTextNode(textVNode.content);
     } else if (isElementVNode(vNode)) {
-        // Handle element nodes
         const elementVNode = vNode as ElementVNode;
         const { tag, props, children } = elementVNode;
         const element = document.createElement(tag);
 
+        if (Array.isArray(children)) {
+            children.forEach((child) => {
+                const childElement = render(child);
+                if (childElement) {
+                    element.appendChild(childElement);
+                }
+            });
+        }
+
         // Set properties/attributes
         if (props) {
             for (const [key, value] of Object.entries(props)) {
-                if (key.startsWith('on') && typeof value === 'function') {
+                if (key.startsWith("on") && typeof value === "function") {
                     element.addEventListener(key.substring(2).toLowerCase(), value);
                 } else if (value === null) {
                     element.removeAttribute(key);
-                } else if (key.startsWith('osiris:')) {
-                    const signalID = key.replace('osiris:', '');
+                } else if (key.startsWith("osiris:")) {
+                    const signalID = key.replace("osiris:", "");
                     const signal = signalRegistry.get(signalID);
 
                     if (!signal) {
                         throw new Error(`No signal associated with ${signalID}`);
                     }
 
-                    // Bind to a specific key if provided
-                    if (value) {
-                        const keyOrIndex = isNaN(Number(value)) ? value : Number(value);
+                    // If `value` is an index for array elements, bind it
+                    if (!isNaN(Number(value))) {
+                        const index = Number(value);
 
-                        // Check if the signal is an array
-                        if (Array.isArray(signal.get())) {
-                            const fragment = document.createDocumentFragment();
+                        // Get the array from the signal
+                        const arrayValue = signal.get();
+                        if (Array.isArray(arrayValue)) {
+                            const item = arrayValue[index];
 
-                            signal.get().forEach((item: string, index: string | number | symbol) => {
-                                const clonedElement = element.cloneNode(true) as HTMLElement;
-                                signal.bind(clonedElement, index); // Bind each item in the array to the element
+                            signal.bind(element, value);
 
-                                clonedElement.textContent = item
+                            // Bind individual fields from the array item to the elements
+                            if (typeof item === "object" && item !== null) {
+                                for (const [itemKey, itemValue] of Object.entries(item)) {
+                                    const itemElement = element.querySelector(
+                                        `[data-osiris-${signalID}="${itemKey}"]`
+                                    );
+                                    if (itemElement) {
+                                        // Bind the itemElement to the respective object key
+                                        signal.bind(itemElement as HTMLElement, itemKey);
 
-                                fragment.appendChild(clonedElement);
-                            });
-
-                            return fragment; // Return the fragment containing all cloned elements
-                        } else {
-                            signal.bind(element, keyOrIndex);
+                                        // Populate the itemElement with the respective value
+                                        (itemElement as HTMLElement).textContent = String(itemValue);
+                                    }
+                                }
+                            }
                         }
+                    } else {
+                        // If not an array, bind to the specific key
+                        signal.bind(element, value);
                     }
                 } else {
                     element.setAttribute(key, value);
                 }
             }
         }
-
-        // Render and append children
-        if (Array.isArray(children)) {
-            children.forEach((child) => {
-                try {
-                    element.appendChild(render(child));
-                } catch (error) {
-                    console.error(`Error rendering child node: ${error}`);
-                }
-            });
-        }
-
         return element;
     }
 
-    throw new Error('Invalid VNode: Missing required fields or incorrect type');
+    // throw new Error("Invalid VNode: Missing required fields or incorrect type");
 };
 
 // Type guards to differentiate between VNode types
 const isTextVNode = (vNode: VNode): vNode is TextVNode => {
-    return (vNode as TextVNode).type === 'text';
+    return (vNode as TextVNode).type === "text";
 };
 
 const isElementVNode = (vNode: VNode): vNode is ElementVNode => {
