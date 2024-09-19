@@ -32,40 +32,6 @@ export const render = async (vNode: VNode): Promise<HTMLElement | Text | Documen
                     element.addEventListener(key.substring(2).toLowerCase(), value);
                 } else if (value === null) {
                     element.removeAttribute(key);
-                } else if (key.startsWith("osiris:")) {
-                    const signalID = key.replace("osiris:", "");
-                    const signal = pulseRegistry.get(signalID);
-
-                    if (!signal) {
-                        throw new Error(`No signal associated with ${signalID}`);
-                    }
-
-                    // If `value` is an index for array elements, bind it
-                    if (!isNaN(Number(value))) {
-                        const index = Number(value);
-
-                        // Get the array from the signal
-                        const arrayValue = signal.get();
-                        if (Array.isArray(arrayValue)) {
-                            const item = arrayValue[index];
-
-
-                            // Bind individual fields from the array item to the elements
-                            if (typeof item === "object" && item !== null) {
-                                for (const [itemKey, itemValue] of Object.entries(item)) {
-                                    const itemElement = element.querySelector(
-                                        `[data-osiris-${signalID}="${itemKey}"]`
-                                    );
-                                    if (itemElement) {
-                                        // Bind the itemElement to the respective object key
-
-                                        // Populate the itemElement with the respective value
-                                        (itemElement as HTMLElement).textContent = String(itemValue);
-                                    }
-                                }
-                            }
-                        }
-                    }
                 } else {
                     element.setAttribute(key, value);
                 }
