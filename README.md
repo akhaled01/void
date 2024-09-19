@@ -1,5 +1,7 @@
 # Osiris.JS
 
+![image-removebg-preview (2)](https://github.com/user-attachments/assets/85516233-7bdb-4fd1-b2a1-f1b54dd18740)
+
 ## Overview
 
 **Osiris** is a lightweight JavaScript framework designed for building dynamic web applications efficiently. It features a custom virtual DOM for optimal UI updates, a routing system akin to Next.js’s app router, and an intuitive event handling mechanism. Osiris allows you to use JSX for creating components seamlessly.
