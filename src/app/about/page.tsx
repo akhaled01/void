@@ -1,5 +1,5 @@
 /** @jsx createElement */
-import { createElement } from "../../../core/vDOM/createElement";
+import { createElement } from "Core/DOM/createElement";
 
 const Page = () => {
   return <div>About</div>;

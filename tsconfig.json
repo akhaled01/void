@@ -10,7 +10,23 @@
     "strict": false, // Enable all strict type-checking options
     "esModuleInterop": true, // Enable compatibility with CommonJS modules
     "skipLibCheck": true, // Skip type checking of declaration files
+    "baseUrl": "./src",
+    "paths": {
+      "Core/*": [
+        "../core/*"
+      ],
+      "CSS/*": [
+        "../css/*"
+      ]
+    }
   },
-  "include": ["src/**/*", "core/**/*", "*.d.ts"],
-  "exclude": ["node_modules", "dist"] // Exclude node_modules and dist
+  "include": [
+    "src/**/*",
+    "core/**/*",
+    "*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ] // Exclude node_modules and dist
 }

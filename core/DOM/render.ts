@@ -1,4 +1,3 @@
-import { pulseRegistry } from "../pulse";
 import { VNode, ElementVNode, TextVNode } from "./types";
 
 /**

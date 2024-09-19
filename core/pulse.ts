@@ -1,5 +1,5 @@
-import { render } from "./vDOM/render";
-import { VNode } from "./vDOM/types";
+import { render } from "./DOM/render";
+import { VNode } from "./DOM/types";
 
 export class Pulse<T extends object | Array<any>> {
   private proxyValue: T;

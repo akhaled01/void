@@ -1,7 +1,5 @@
-import { diff } from "./vDOM/diff"; // Import your diffing algorithm
-import { patch } from "./vDOM/patch"; // Import your patching function
-import { render as vDOMRender } from "./vDOM/render"; // Import vDOM render function
-import { VNode } from "./vDOM/types"; // Import the type for your virtual DOM node
+import { render as vDOMRender } from "./DOM/render"; // Import vDOM render function
+import { VNode } from "./DOM/types"; // Import the type for your virtual DOM node
 
 export class Router {
   routes: any;
@@ -40,26 +38,19 @@ export class Router {
     try {
       const Page = await this.pageContext(componentPath).default;
       await this.updateRoute(Page); // Use vDOM update method
-    } catch (error) {      
+    } catch (error) {
       console.error(`Error loading component for path: ${path}`, error);
     }
   }
 
   async updateRoute(Page: () => VNode) {
-    const newVNode = await Page(); // Get the virtual DOM for the new page    
+    const newVNode = Page(); // Get the virtual DOM for the new page    
 
-    if (this.currentVNode === null) {
-      // Initial render if no current vDOM
-      if (this.root) {
-        const realDOM = await vDOMRender(newVNode); // Render the vDOM to real DOM
-        this.root.appendChild(realDOM);
-      }
-    } else {
-      // If there is already a current vDOM, perform diff and patch
-      const patches = diff(this.currentVNode, newVNode); // Calculate the differences      
-      if (this.root) {
-        patch(this.root, patches); // Apply the patches to update the real DOM
-      }
+    if (this.root) {
+      // Clear the current content and render the new virtual DOM
+      this.root.innerHTML = ''; // Clear the existing content
+      const realDOM = await vDOMRender(newVNode); // Render the vDOM to real DOM
+      this.root.appendChild(realDOM); // Append the new content
     }
 
     this.currentVNode = newVNode; // Update the current vDOM

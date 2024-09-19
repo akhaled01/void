@@ -18,6 +18,7 @@ export default {
     alias: {
       Components: _resolve(__dirname, "src/components/"),
       Core: _resolve(__dirname, "core/"),
+      CSS: _resolve(__dirname, "/css/")
     },
   },
   module: {

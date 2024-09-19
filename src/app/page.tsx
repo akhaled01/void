@@ -1,7 +1,7 @@
 /** @jsx createElement */
-import { createElement } from "../../core/vDOM/createElement";
-import { genPulse } from "../../core/pulse";
-import "../css/home.css";
+import { createElement } from "Core/DOM/createElement";
+import { genPulse } from "Core/pulse";
+import "CSS/home.css";
 
 // Child template function for rendering each item in the array
 const itemTemplate = async (item: { checked: any; toggleCheck: () => any; a: any; b: any; }, index: number) => {
