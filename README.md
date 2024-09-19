@@ -2,11 +2,13 @@
 
 ## Overview
 
-**Osiris** is a lightweight JavaScript framework that enables developers to build dynamic web applications efficiently. It features a custom virtual DOM for efficient UI updates, a simple routing system, and an intuitive event handling mechanism.
+**Osiris** is a lightweight JavaScript framework designed for building dynamic web applications efficiently. It features a custom virtual DOM for optimal UI updates, a routing system akin to Next.js’s app router, and an intuitive event handling mechanism. Osiris allows you to use JSX for creating components seamlessly.
+
+> Osiris is very much unopinionated, if you don't like the way things are done, feel free to change em!
 
 ## How Osiris Works
 
-At its core, Osiris operates by maintaining a virtual representation of the DOM. When changes are made, Osiris calculates the minimal updates needed and applies them to the real DOM. This approach enhances performance by reducing unnecessary DOM manipulations.
+Osiris maintains a virtual representation of the DOM, allowing for efficient updates. Changes are computed and applied only where necessary, enhancing performance by reducing direct DOM manipulations.
 
 ## Getting Started
 
@@ -16,22 +18,27 @@ At its core, Osiris operates by maintaining a virtual representation of the DOM.
 2. Install dependencies using npm or yarn.
 3. Include the core files in your project structure.
 
-### Creating Elements
+### Using JSX
 
-Osiris uses a custom `createElement` function to create DOM elements. This function takes three parameters: the tag name, attributes, and children.
+Osiris supports JSX for creating elements. To use JSX, ensure your `tsconfig.json` is set up to handle JSX syntax.
 
-#### Example: Creating a Div
+#### Example: Creating a Component with JSX
 
 ```typescript
 import { createElement } from "@core/DOM/createElement";
 
-const myDiv = createElement("div", { id: "myDiv", class: "container" }, "Hello, Osiris!");
-document.body.appendChild(myDiv);
+const MyComponent = () => {
+  return (
+    <div id="myDiv" class="container">
+      Hello, Osiris!
+    </div>
+  );
+};
 ```
 
 ### Adding Events
 
-To handle events, you can use the `Signal` class provided by Osiris. This class allows you to listen for and trigger events on DOM elements.
+You can use the `Signal` class to handle events. This class allows you to listen for and trigger events on DOM elements.
 
 #### Example: Adding a Click Event to a Button
 
@@ -39,74 +46,204 @@ To handle events, you can use the `Signal` class provided by Osiris. This class 
 import { createElement } from "@core/DOM/createElement";
 import { Signal } from "@core/signal";
 
-const myButton = createElement("button", { id: "myButton" }, "Click Me");
-document.body.appendChild(myButton);
-
-// Listen for click events
-Signal.listen(myButton, "click", () => {
-  alert("Button was clicked!");
-});
+const MyButton = () => {
+  const button = <button id="myButton">Click Me</button>;
+  Signal.listen(button, "click", () => {
+    alert("Button was clicked!");
+  });
+  return button;
+};
 ```
-
-### Using the Router
-
-The `Router` class manages navigation between different views in your application. You can define routes and load corresponding components dynamically.
-
-#### Example: Setting Up the Router
+> You can also bind events to an element with `on` attributes that HTML5 supports, like so:
 
 ```typescript
-import { Router } from "@core/router";
-
-const routes = {
-  "/": () => createElement("div", {}, "Home Page"),
-  "/about": () => createElement("div", {}, "About Page"),
-};
-
-const router = new Router(routes);
+const button = <button onClick={upArr}>Update Array</button>
 ```
 
-### Complete Example
+### Routing
 
-Here's a simple application that creates a navigation menu and responds to button clicks.
+The `Router` class manages navigation between different views in your application, similar to Next.js’s app router. You can define routes and dynamically load components based on the current file structure. The `Page` function inside needs to be defaultly exported
+
+```bash
+├── about
+│   └── page.tsx -> `/about`
+├── page.tsx -> `/`
+└── sample
+    └── page.tsx -> `/sample`
+```
+
+## State Management with Pulses
+
+### Overview
+
+The `Pulse` class provides a reactive data structure that allows for efficient updates and rendering of DOM elements based on changes to its state. It is particularly useful for managing arrays and objects while maintaining reactivity.
+
+### Type Parameters
+
+- **T**: Type of the value being managed, which can be an object or an array.
+
+### Class Properties
+
+- `private proxyValue: T`: The reactive value managed by the Pulse instance.
+- `private id: string`: Unique identifier for the Pulse instance.
+- `private listeners: Set<(value: T) => void>`: Set of subscriber callbacks that are notified on value changes.
+- `private template?: (data: T, index?: number, signalId?: string) => Promise<VNode>`: Template function for rendering the data.
+- `private rootElement: HTMLElement | null`: The DOM element to which the Pulse instance is attached.
+- `itemSignalRegistry: Map<string, Pulse<any>>`: Registry for child Pulses associated with array items.
+
+### Constructor
 
 ```typescript
-import { createElement } from "@core/DOM/createElement";
-import { Signal } from "@core/signal";
-import { Router } from "@core/router";
+constructor(initialValue: T, id: string, template?: (data: T, index?: number, signalId?: string) => Promise<VNode>)
+```
 
-const routes = {
-  "/": () => createElement("div", {}, "Home Page"),
-  "/about": () => createElement("div", {}, "About Page"),
+- **initialValue**: The initial value to be managed by the Pulse instance.
+- **id**: Unique identifier for the Pulse instance.
+- **template**: Optional template function for rendering.
+
+### Methods
+
+#### `set(newValue: T): void`
+
+Sets a new value for the Pulse instance and triggers re-rendering.
+
+#### `get(): T`
+
+Returns the current value managed by the Pulse instance.
+
+#### `subscribe(listener: (value: T) => void): () => void`
+
+Adds a listener to be notified on value changes. Returns a function to unsubscribe.
+
+#### `attachTo(element: HTMLElement): void`
+
+Attaches the Pulse instance to a specified DOM element for rendering.
+
+#### `addItem(item: any): void`
+
+Adds a new item to the array if the managed value is an array. Triggers rendering.
+
+#### `updateItem(index: number, newValue: any): void`
+
+Updates an item in the array at the specified index. Triggers rendering.
+
+#### `removeItem(index: number): void`
+
+Removes an item from the array at the specified index. Triggers rendering.
+
+#### `notifyListeners(): void`
+
+Notifies all subscribers about the value change.
+
+### Global Registry
+
+#### `pulseRegistry: Map<string, Pulse<any>>`
+
+A global registry to keep track of all Pulse instances by their unique IDs.
+
+#### `genPulse`
+
+```typescript
+const genPulse = <T extends object | Array<any>>(
+  initialValue: T,
+  id: string,
+  baseTemplate?: (data: any, index?: number, signalId?: string) => Promise<VNode>,
+  childTemplate?: (data: any, index?: number, signalId?: string) => Promise<VNode>
+): Pulse<T>
+```
+
+Generates a new Pulse instance and adds it to the global registry.
+
+- **initialValue**: The initial value for the new Pulse.
+- **id**: Unique ID for the new Pulse.
+- **baseTemplate**: Optional base template for rendering the parent object.
+- **childTemplate**: Optional template for rendering child items.
+
+## Example Usage
+
+Below is an example demonstrating how to use the `Pulse` class in a React-like environment:
+
+```typescript
+/** @jsx createElement */
+import { createElement } from "Core/DOM/createElement";
+import { genPulse } from "Core/pulse";
+import { Signal } from "Core/signal";
+import "CSS/home.css";
+
+// Child template function for rendering each item in the array
+const itemTemplate = async (item: { checked: any; toggleCheck: () => any; a: any; b: any; }, index: number) => {
+  return (
+    <div class={`aab${item.checked ? " checked" : ""}`}>
+      <button id={`arr-button-${index}`} onClick={() => item.toggleCheck()}>Check</button>
+      <p>{item.a}</p>
+      <p>{item.b}</p>
+      <p>{item.checked ? "Checked" : "Unchecked"}</p>
+    </div>
+  );
 };
 
-const router = new Router(routes);
+// Base template function that renders the entire array and the update button
+const baseTemplate = async (array: { a: number; b: number; checked: boolean; toggleCheck: () => void; }[], upArr: () => void) => {
+  return (
+    <div>
+      <div id="array-signal"></div>
+      <button onClick={upArr}>Update Array</button>
+    </div>
+  );
+};
 
-// Create navigation links
-const nav = createElement("nav", {}, 
-  createElement("a", { href: "/" }, "Home"),
-  createElement("a", { href: "/about" }, "About")
-);
-document.body.appendChild(nav);
+const Page = async () => {
+  const sig = genPulse(
+    [
+      {
+        a: 1,
+        b: 2,
+        checked: true,
+        toggleCheck: function () {
+          this.checked = !this.checked; // Toggle checked state
+        }
+      },
+    ],
+    "arr",
+    async (item, index) => itemTemplate(item, index) // Use the child template
+  );
 
-// Create a button
-const myButton = createElement("button", { id: "myButton" }, "Click Me");
-document.body.appendChild(myButton);
+  // Move upArr function above its usage in baseTemplate
+  const upArr = () => {
+    const currentArray = sig.get();
+    if (Array.isArray(currentArray)) {
+      sig.addItem({
+        a: 2,
+        b: 3,
+        checked: false,
+        toggleCheck: function () {
+          this.checked = !this.checked; // Toggle checked state
+        }
+      }); // Use addItem to append to array
+    } else {
+      console.error("sig does not contain an array:", currentArray);
+    }
+  };
 
-// Listen for clicks on the button
-Signal.listen(myButton, "click", () => {
-  alert("Button was clicked!");
-});
+  Signal.listen(document, "DOMContentLoaded", () => {
+    const rootElement = document.getElementById("array-signal");
+    if (rootElement) {
+      sig.attachTo(rootElement);
+    } else {
+      console.error("Root element for sig not found");
+    }
+  });
 
-// Initial route render
-router.handleRouteChange();
+  return await baseTemplate(sig.get(), upArr); // Pass upArr to the base template
+};
+
+export default Page;
 ```
+
+In this example, the `Page` component initializes a `Pulse` instance with an array of objects. Each object can be toggled between checked and unchecked states. The `upArr` function allows adding new items to the array, demonstrating the dynamic nature of the `Pulse` class.
 
 ## Conclusion
 
-With Osiris, you can easily create elements, handle events, and manage routing in your web applications. This documentation provides the foundational knowledge needed to get started, and you can explore the source code for more advanced functionalities.
+Osiris enables you to create dynamic web applications with ease using JSX for component creation, an intuitive event handling system, and a powerful router similar to Next.js. This documentation provides you with the foundational knowledge to get started, allowing you to build your applications without guesswork.
 
-For additional resources, consider exploring the framework’s repository or community forums.
-
----
-
-This documentation should help new users understand how to effectively use Osiris without much guesswork. Let me know if you need further modifications or additional topics covered!
+For additional resources, explore the framework’s repository or community forums.
