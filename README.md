@@ -36,7 +36,7 @@ const MyComponent = () => {
 };
 ```
 
-### Using css
+### Using CSS
 
 Osiris handles css using css modules, you may declare them inside the `css` folder for typescript alias support, but really you can have em anywhere.
 
