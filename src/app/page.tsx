@@ -1,6 +1,7 @@
 /** @jsx createElement */
 import { createElement } from "Core/DOM/createElement";
 import { genPulse } from "Core/pulse";
+import { SignalEmitter } from "Core/SignalEmitter";
 import "CSS/home.css";
 
 // Child template function for rendering each item in the array
@@ -58,14 +59,14 @@ const Page = async () => {
     }
   };
 
-  document.addEventListener("DOMContentLoaded", () => {
+  SignalEmitter.listen(document, "DOMContentLoaded", () => {
     const rootElement = document.getElementById("array-signal");
     if (rootElement) {
       sig.attachTo(rootElement);
     } else {
       console.error("Root element for sig not found");
     }
-  });
+  })
 
   return await baseTemplate(sig.get(), upArr); // Pass upArr to the base template
 };
