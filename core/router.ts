@@ -16,7 +16,7 @@ export class Router {
     this.init();
   }
 
-  init() {
+  private init() {
     this.handleRouteChange();
     window.addEventListener("popstate", this.handleRouteChange);
     document.body.addEventListener("click", (event) => {
@@ -30,7 +30,7 @@ export class Router {
     });
   }
 
-  async handleRouteChange() {
+  private async handleRouteChange() {
     const path =
       window.location.pathname === "/" ? "" : window.location.pathname;
     const componentPath = `.${path}/page.tsx`;
@@ -43,7 +43,7 @@ export class Router {
     }
   }
 
-  async updateRoute(Page: () => Promise<VNode>) {
+  private async updateRoute(Page: () => Promise<VNode>) {
     const newVNode = await Page(); // Get the virtual DOM for the new page    
 
     if (this.root) {

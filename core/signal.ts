@@ -2,6 +2,9 @@
 
 type DocumentEventNames = keyof DocumentEventMap;
 
+/**
+ * A utility class for managing DOM events on a `Document` object.
+ */
 export class Signal {
     // Subscribe to a native event on a DOM element
     static listen<T extends DocumentEventNames>(
