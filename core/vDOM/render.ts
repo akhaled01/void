@@ -1,4 +1,4 @@
-import { signalRegistry } from "../signal";
+import { pulseRegistry } from "../pulse";
 import { VNode, ElementVNode, TextVNode } from "./types";
 
 /**
@@ -7,7 +7,7 @@ import { VNode, ElementVNode, TextVNode } from "./types";
  * @param vNode - The virtual DOM node to render.
  * @returns The corresponding real DOM node.
  */
-export const render = (vNode: VNode): HTMLElement | Text | DocumentFragment => {
+export const render = async (vNode: VNode): Promise<HTMLElement | Text | DocumentFragment> => {
     if (isTextVNode(vNode)) {
         const textVNode = vNode as TextVNode;
         return document.createTextNode(textVNode.content);
@@ -17,8 +17,8 @@ export const render = (vNode: VNode): HTMLElement | Text | DocumentFragment => {
         const element = document.createElement(tag);
 
         if (Array.isArray(children)) {
-            children.forEach((child) => {
-                const childElement = render(child);
+            children.forEach(async (child) => {
+                const childElement = await render(child);
                 if (childElement) {
                     element.appendChild(childElement);
                 }
@@ -34,7 +34,7 @@ export const render = (vNode: VNode): HTMLElement | Text | DocumentFragment => {
                     element.removeAttribute(key);
                 } else if (key.startsWith("osiris:")) {
                     const signalID = key.replace("osiris:", "");
-                    const signal = signalRegistry.get(signalID);
+                    const signal = pulseRegistry.get(signalID);
 
                     if (!signal) {
                         throw new Error(`No signal associated with ${signalID}`);
@@ -49,7 +49,6 @@ export const render = (vNode: VNode): HTMLElement | Text | DocumentFragment => {
                         if (Array.isArray(arrayValue)) {
                             const item = arrayValue[index];
 
-                            signal.bind(element, value);
 
                             // Bind individual fields from the array item to the elements
                             if (typeof item === "object" && item !== null) {
@@ -59,7 +58,6 @@ export const render = (vNode: VNode): HTMLElement | Text | DocumentFragment => {
                                     );
                                     if (itemElement) {
                                         // Bind the itemElement to the respective object key
-                                        signal.bind(itemElement as HTMLElement, itemKey);
 
                                         // Populate the itemElement with the respective value
                                         (itemElement as HTMLElement).textContent = String(itemValue);
@@ -67,9 +65,6 @@ export const render = (vNode: VNode): HTMLElement | Text | DocumentFragment => {
                                 }
                             }
                         }
-                    } else {
-                        // If not an array, bind to the specific key
-                        signal.bind(element, value);
                     }
                 } else {
                     element.setAttribute(key, value);

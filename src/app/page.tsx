@@ -1,84 +1,73 @@
 /** @jsx createElement */
 import { createElement } from "../../core/vDOM/createElement";
-import { genSignal } from "../../core/signal";
+import { genPulse } from "../../core/pulse";
 import "../css/home.css";
 
-const Page = () => {
-  const signal = genSignal({ name: "Osiris", age: 25 }, "user", (d) => (
-    <div>
-      <div>{d.age}</div>
-      <div>{d.name}</div>
+// Child template function for rendering each item in the array
+const itemTemplate = async (item: { checked: any; toggleCheck: () => any; a: any; b: any; }, index: number) => {
+  return (
+    <div class={`aab${item.checked ? " checked" : ""}`}>
+      <button id={`arr-button-${index}`} onClick={() => item.toggleCheck()}>Check</button>
+      <p>{item.a}</p>
+      <p>{item.b}</p>
+      <p>{item.checked ? "Checked" : "Unchecked"}</p>
     </div>
-  ));
+  );
+};
 
-  const anotherSignal = genSignal({ val: 90 }, "anotha", (d) => <p>{d.val}</p>);
+// Base template function that renders the entire array and the update button
+const baseTemplate = async (array: { a: number; b: number; checked: boolean; toggleCheck: () => void; }[], upArr: () => void) => {
+  return (
+    <div>
+      <div id="array-signal"></div>
+      <button onClick={upArr}>Update Array</button>
+    </div>
+  );
+};
 
-  const arraySignal = genSignal(
+const Page = async () => {
+  const sig = genPulse(
     [
       {
         a: 1,
         b: 2,
-      },
-      {
-        a: 2,
-        b: 3,
+        checked: true,
+        toggleCheck: function () {
+          this.checked = !this.checked; // Toggle checked state
+        }
       },
     ],
     "arr",
-    (arr) => (
-      <div>
-        {arr.map((item) => (
-          <div class="aab">
-            <p>{item.a}</p>
-            <p>{item.b}</p>
-          </div>
-        ))}
-      </div>
-    )
+    async (item, index) => itemTemplate(item, index) // Use the child template
   );
 
-  const updateName = () => {
-    signal.get().name += "o";
-  };
-
-  const updateAge = () => {
-    signal.get().age += 1;
-  };
-
-  const updateVal = () => {
-    anotherSignal.get().val += 4;
-  };
-
+  // Move upArr function above its usage in baseTemplate
   const upArr = () => {
-    arraySignal.set([
-      ...arraySignal.get(),
-      {
+    const currentArray = sig.get();
+    if (Array.isArray(currentArray)) {
+      sig.addItem({
         a: 2,
         b: 3,
-      },
-    ]);
+        checked: false,
+        toggleCheck: function () {
+          this.checked = !this.checked; // Toggle checked state
+        }
+      }); // Use addItem to append to array
+    } else {
+      console.error("sig does not contain an array:", currentArray);
+    }
   };
 
-  document.addEventListener('DOMContentLoaded', () => {
-    console.log("attaching");
-    
-    signal.attachTo(document.getElementById("user-signal"));
-    anotherSignal.attachTo(document.getElementById("another-signal"));
-    arraySignal.attachTo(document.getElementById("array-signal"));
-  })
+  document.addEventListener("DOMContentLoaded", () => {
+    const rootElement = document.getElementById("array-signal");
+    if (rootElement) {
+      sig.attachTo(rootElement);
+    } else {
+      console.error("Root element for sig not found");
+    }
+  });
 
-  return (
-    <div class="aab">
-      <div id="user-signal"></div>
-      <div id="another-signal"></div>
-      <div id="array-signal"></div>
-
-      <button onClick={updateName}>Update Name</button>
-      <button onClick={updateAge}>Update Age</button>
-      <button onClick={updateVal}>Update Val</button>
-      <button onClick={upArr}>Update Array</button>
-    </div>
-  );
+  return await baseTemplate(sig.get(), upArr); // Pass upArr to the base template
 };
 
 export default Page;

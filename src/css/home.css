@@ -8,3 +8,7 @@
 .za {
     display: flex;
 }
+
+.checked {
+    color: orange;
+}

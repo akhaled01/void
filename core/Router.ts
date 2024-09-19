@@ -38,20 +38,20 @@ export class Router {
     const componentPath = `.${path}/page.tsx`;
 
     try {
-      const Page = this.pageContext(componentPath).default;
-      this.updateRoute(Page); // Use vDOM update method
+      const Page = await this.pageContext(componentPath).default;
+      await this.updateRoute(Page); // Use vDOM update method
     } catch (error) {      
       console.error(`Error loading component for path: ${path}`, error);
     }
   }
 
-  updateRoute(Page: () => VNode) {
-    const newVNode = Page(); // Get the virtual DOM for the new page    
+  async updateRoute(Page: () => VNode) {
+    const newVNode = await Page(); // Get the virtual DOM for the new page    
 
     if (this.currentVNode === null) {
       // Initial render if no current vDOM
       if (this.root) {
-        const realDOM = vDOMRender(newVNode); // Render the vDOM to real DOM
+        const realDOM = await vDOMRender(newVNode); // Render the vDOM to real DOM
         this.root.appendChild(realDOM);
       }
     } else {
