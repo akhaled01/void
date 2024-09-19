@@ -36,6 +36,12 @@ const MyComponent = () => {
 };
 ```
 
+### using css
+
+Osiris handles css using css modules, you may declare them inside the `css` folder for typescript alias support, but really you can have em anywhere.
+
+> tailwind integration coming soon! look below for an example usage of css in osiris
+
 ### Adding Events
 
 You can use the `Signal` class to handle events. This class allows you to listen for and trigger events on DOM elements.
