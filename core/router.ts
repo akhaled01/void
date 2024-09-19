@@ -43,8 +43,8 @@ export class Router {
     }
   }
 
-  async updateRoute(Page: () => VNode) {
-    const newVNode = Page(); // Get the virtual DOM for the new page    
+  async updateRoute(Page: () => Promise<VNode>) {
+    const newVNode = await Page(); // Get the virtual DOM for the new page    
 
     if (this.root) {
       // Clear the current content and render the new virtual DOM
