@@ -1,4 +1,4 @@
-# Osiris Framework Documentation
+# Osiris.JS
 
 ## Overview
 
