@@ -1,7 +1,7 @@
 /** @jsx createElement */
 import { createElement } from "Core/DOM/createElement";
 import { genPulse } from "Core/pulse";
-import { SignalEmitter } from "Core/SignalEmitter";
+import { Signal } from "Core/signal";
 import "CSS/home.css";
 
 // Child template function for rendering each item in the array
@@ -59,7 +59,7 @@ const Page = async () => {
     }
   };
 
-  SignalEmitter.listen(document, "DOMContentLoaded", () => {
+  Signal.listen(document, "DOMContentLoaded", () => {
     const rootElement = document.getElementById("array-signal");
     if (rootElement) {
       sig.attachTo(rootElement);

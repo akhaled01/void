@@ -2,7 +2,7 @@
 
 type DocumentEventNames = keyof DocumentEventMap;
 
-export class SignalEmitter {
+export class Signal {
     // Subscribe to a native event on a DOM element
     static listen<T extends DocumentEventNames>(
         target: Document,
