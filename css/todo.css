@@ -1,0 +1,14 @@
+.todo-item {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+
+.todo-item.completed {
+  text-decoration: line-through;
+  color: gray;
+}
+
+input[type="text"] {
+  margin-right: 5px;
+}
