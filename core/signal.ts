@@ -1,5 +1,3 @@
-// core/eventEmitter.ts
-
 type DocumentEventNames = keyof DocumentEventMap;
 
 /**

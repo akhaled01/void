@@ -16,30 +16,41 @@ export const render = async (vNode: VNode): Promise<HTMLElement | Text | Documen
         const element = document.createElement(tag);
 
         if (Array.isArray(children)) {
-            children.forEach(async (child) => {
+            for (const child of children) {
                 const childElement = await render(child);
                 if (childElement) {
                     element.appendChild(childElement);
                 }
-            });
+            }
         }
 
         // Set properties/attributes
         if (props) {
             for (const [key, value] of Object.entries(props)) {
+                // Handle event listeners
                 if (key.startsWith("on") && typeof value === "function") {
                     element.addEventListener(key.substring(2).toLowerCase(), value);
-                } else if (value === null) {
+                }
+                // Handle boolean attributes properly
+                else if (typeof value === "boolean") {
+                    if (value) {
+                        element.setAttribute(key, "");  // Add the attribute if true
+                    } else {
+                        element.removeAttribute(key);  // Remove the attribute if false
+                    }
+                }
+                // Handle other types of attributes
+                else if (value === null) {
                     element.removeAttribute(key);
                 } else {
-                    element.setAttribute(key, value);
+                    element.setAttribute(key, String(value));  // Convert to string for any other type
                 }
             }
         }
         return element;
     }
 
-    // throw new Error("Invalid VNode: Missing required fields or incorrect type");
+    throw new Error("Invalid VNode: Missing required fields or incorrect type");
 };
 
 // Type guards to differentiate between VNode types

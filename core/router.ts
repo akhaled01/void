@@ -16,6 +16,14 @@ export class Router {
     this.init();
   }
 
+  private isInternalLink(href: string): boolean {
+    // A simple way to check if the link is internal is to see if it's relative or starts with the same origin
+    const isSameOrigin = href.startsWith(window.location.origin);
+    const isRelativeLink = href.startsWith("/") || href.startsWith(".");
+
+    return isSameOrigin || isRelativeLink;
+  }
+
   private init() {
     this.handleRouteChange();
     window.addEventListener("popstate", this.handleRouteChange);
@@ -24,8 +32,14 @@ export class Router {
       if (target.tagName === "A") {
         event.preventDefault();
         const href = (target as HTMLAnchorElement).getAttribute("href");
-        window.history.pushState(null, "", href);
-        this.handleRouteChange();
+        if (href && this.isInternalLink(href)) {
+          console.log("internal ref");
+          event.preventDefault();
+          window.history.pushState(null, "", href);
+          this.handleRouteChange();
+        } else {
+          window.location.href = href
+        }
       }
     });
   }

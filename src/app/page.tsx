@@ -4,71 +4,44 @@ import { genPulse } from "Core/pulse";
 import { Signal } from "Core/signal";
 import "CSS/home.css";
 
-// Child template function for rendering each item in the array
-const itemTemplate = async (item: { checked: any; toggleCheck: () => any; a: any; b: any; }, index: number) => {
-  return (
-    <div class={`aab${item.checked ? " checked" : ""}`}>
-      <button id={`arr-button-${index}`} onClick={() => item.toggleCheck()}>Check</button>
-      <p>{item.a}</p>
-      <p>{item.b}</p>
-      <p>{item.checked ? "Checked" : "Unchecked"}</p>
-    </div>
-  );
-};
-
-// Base template function that renders the entire array and the update button
-const baseTemplate = async (array: { a: number; b: number; checked: boolean; toggleCheck: () => void; }[], upArr: () => void) => {
-  return (
-    <div>
-      <div id="array-signal"></div>
-      <button onClick={upArr}>Update Array</button>
-    </div>
-  );
-};
-
 const Page = async () => {
-  const sig = genPulse(
-    [
-      {
-        a: 1,
-        b: 2,
-        checked: true,
-        toggleCheck: function () {
-          this.checked = !this.checked; // Toggle checked state
-        }
-      },
-    ],
-    "arr",
-    async (item, index) => itemTemplate(item, index) // Use the child template
-  );
+  return (
+    <div class="container">
+      <header>
+        <div class="logo ibm-plex-mono-regular-italic">OSIRIS.js</div>
+        <nav>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#docs">Docs</a></li>
+            <li><a href="/todo">Example</a></li>
+          </ul>
+        </nav>
+      </header>
 
-  // Move upArr function above its usage in baseTemplate
-  const upArr = () => {
-    const currentArray = sig.get();
-    if (Array.isArray(currentArray)) {
-      sig.addItem({
-        a: 2,
-        b: 3,
-        checked: false,
-        toggleCheck: function () {
-          this.checked = !this.checked; // Toggle checked state
-        }
-      }); // Use addItem to append to array
-    } else {
-      console.error("sig does not contain an array:", currentArray);
-    }
-  };
+      <main>
+        <section class="hero">
+          <h1>Build the Future with <span class="ibm-plex-mono-semibold-italic">Osiris</span></h1>
+          <p class="tagline">A minimal, powerful JavaScript framework for modern web applications</p>
+          <a href="https://github.com/akhaled01/OSIRIS.JS" class="cta">Get Started</a>
+        </section>
 
-  Signal.listen(document, "DOMContentLoaded", () => {
-    const rootElement = document.getElementById("array-signal");
-    if (rootElement) {
-      sig.attachTo(rootElement);
-    } else {
-      console.error("Root element for sig not found");
-    }
-  })
-
-  return await baseTemplate(sig.get(), upArr); // Pass upArr to the base template
+        <section class="features" id="features">
+          <div class="feature">
+            <h3>Lightning Fast</h3>
+            <p>Osiris.js is optimized for speed, ensuring your applications load and run quickly.</p>
+          </div>
+          <div class="feature">
+            <h3>Easy to Learn</h3>
+            <p>With a gentle learning curve, you'll be building amazing apps in no time.</p>
+          </div>
+          <div class="feature">
+            <h3>Unopinionated</h3>
+            <p>Adapt Osiris.js to your needs with its modular and extensible architecture.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+  )
 };
 
 export default Page;
