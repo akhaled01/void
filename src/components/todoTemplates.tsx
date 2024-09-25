@@ -10,7 +10,8 @@ export const todoItemTemplate = async (todo: Todo, index: number, signalId?: str
             <input type="checkbox" checked={todo.completed} onChange={() => todo.toggleComplete()} />
             <span>{todo.title}</span>
             <button onClick={() => {
-                pulseRegistry.get(signalId!)?.removeItem(index)
+                // pulseRegistry.get(signalId!)?.removeItem(index)
+                
             }}>Delete</button>
         </div>
     );
@@ -23,7 +24,7 @@ export const todoListTemplate = async (addTodo: (title: string) => void, clearCo
             <input type="text" id="new-todo" placeholder="What needs to be done?" />
             <button id="add-todo-btn" onClick={() => {
                 const input = document.getElementById('new-todo') as HTMLInputElement;
-                if (input.value.trim()) {
+                if (input.value.trim() && input.value.trim().length >= 3) {
                     addTodo(input.value);
                     input.value = '';
                 }

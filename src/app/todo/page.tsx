@@ -26,7 +26,6 @@ const Page = async () => {
     // Fixed clearCompleted function
     const clearCompleted = () => {
         const activeTodos = todos.get().filter(t => !t.completed);
-        console.log("active", activeTodos);
         todos.set(activeTodos);
     }
 

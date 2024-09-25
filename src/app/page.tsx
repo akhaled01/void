@@ -1,7 +1,5 @@
 /** @jsx createElement */
 import { createElement } from "Core/DOM/createElement";
-import { genPulse } from "Core/pulse";
-import { Signal } from "Core/signal";
 import "CSS/home.css";
 
 const Page = async () => {
@@ -20,7 +18,7 @@ const Page = async () => {
 
       <main>
         <section class="hero">
-          <h1>Build the Future with <span class="ibm-plex-mono-semibold-italic">Osiris</span></h1>
+          <h1>Build the Future with <span class="ibm-plex-mono-semibold-italic">OSIRIS</span></h1>
           <p class="tagline">A minimal, powerful JavaScript framework for modern web applications</p>
           <a href="https://github.com/akhaled01/OSIRIS.JS" class="cta">Get Started</a>
         </section>

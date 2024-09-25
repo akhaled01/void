@@ -61,14 +61,12 @@ export class Pulse<T extends object | Array<any>> {
           Reflect.set(target, prop, newValue);
 
           // If it's an array, update the specific item and not the entire array
-          // if (isArray && typeof propIndex === "number") {
-          //   self.updateArrayItem(propIndex, newValue);
-          // } else {
-          //   // For non-array objects, trigger a full render
-          //   self.performDOMRender();
-          // }
-
-          self.performDOMRender();
+          if (isArray && typeof propIndex === "number") {
+            self.updateArrayItem(propIndex, newValue);
+          } else {
+            // For non-array objects, trigger a full render
+            self.performDOMRender();
+          }
 
           // Notify listeners regardless of whether it's an array or object
           self.notifyListeners();
@@ -85,7 +83,9 @@ export class Pulse<T extends object | Array<any>> {
    */
   set(newValue: T): void {
     this.proxyValue = this.makeReactive(newValue);
+    this.itemSignalRegistry.clear()
     this.notifyListeners();
+    this.performDOMRender()
   }
 
   /**
@@ -130,7 +130,7 @@ export class Pulse<T extends object | Array<any>> {
   /**
    * Performs DOM rendering based on the current value and template.
    */
-  private performDOMRender(): void {
+  performDOMRender(): void {
     if (this.template && this.rootElement) {
       if (Array.isArray(this.proxyValue)) {
         this.renderArray(this.proxyValue);
@@ -238,9 +238,11 @@ export class Pulse<T extends object | Array<any>> {
   removeItem(index: number): void {
     if (Array.isArray(this.proxyValue)) {
       (this.proxyValue as any[]).splice(index, 1); // Remove the item from the array
+
+      // Update the itemSignalRegistry and defer DOM updates until full render
       this.itemSignalRegistry.delete(`${this.id}-${index}`);
-      this.rootElement?.removeChild(this.rootElement.children[index]); // Remove the corresponding DOM element
       this.notifyListeners();
+      this.performDOMRender();  // Trigger a full re-render after the array is modified
     }
   }
 }

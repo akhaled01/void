@@ -1,12 +1,12 @@
-type DocumentEventNames = keyof DocumentEventMap;
+type DocumentEventNames = keyof GlobalEventHandlersEventMap | keyof DocumentEventMap;
 
 /**
- * A utility class for managing DOM events on a `Document` object.
+ * A utility class for managing DOM events on a `Document` or an `` object.
  */
 export class Signal {
     // Subscribe to a native event on a DOM element
     static listen<T extends DocumentEventNames>(
-        target: Document,
+        target: Document | HTMLElement,
         eventName: T,
         callback: (event: DocumentEventMap[T]) => void
     ) {
@@ -20,7 +20,7 @@ export class Signal {
 
     // Listen for multiple events on a target
     static listenMultiple<T extends DocumentEventNames>(
-        target: Document,
+        target: Document | HTMLElement,
         eventNames: T[],
         callback: (event: DocumentEventMap[T]) => void
     ) {
@@ -33,7 +33,7 @@ export class Signal {
     }
 
     // Trigger a native event programmatically
-    static trigger(target: Document, eventName: DocumentEventNames) {
+    static trigger(target: Document | HTMLElement, eventName: DocumentEventNames) {
         const event = new Event(eventName);
         target.dispatchEvent(event);
     }
