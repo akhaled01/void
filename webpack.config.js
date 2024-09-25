@@ -3,6 +3,7 @@ import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import CopyPlugin from "copy-webpack-plugin";
 import { resolve as _resolve, join, dirname } from "path";
 import { fileURLToPath } from "url";
+import webpack from "webpack";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -18,7 +19,7 @@ export default {
     alias: {
       Components: _resolve(__dirname, "src/components/"),
       Core: _resolve(__dirname, "core/"),
-      CSS: _resolve(__dirname, "/css/")
+      CSS: _resolve(__dirname, "css/"),
     },
   },
   module: {
@@ -80,10 +81,20 @@ export default {
     new CopyPlugin({
       patterns: [
         {
-          from: _resolve(__dirname, "globals.css"), // Source file
-          to: _resolve(__dirname, "dist/globals.css"), // Destination file
+          from: _resolve(__dirname, "css"), // Source directory
+          to: _resolve(__dirname, "dist/css"), // Destination directory
+          globOptions: {
+            ignore: ["**/ignored-file.css"], // If you need to ignore specific files
+          },
+        },
+        {
+          from: _resolve(__dirname, "globals.css"),
+          to: _resolve(__dirname, "dist/globals.css"),
         },
       ],
+    }),
+    new webpack.ProvidePlugin({
+      createElement: ["Core/DOM/createElement", "createElement"], // Automatically import `createElement`
     }),
   ],
   devServer: {

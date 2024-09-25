@@ -6,11 +6,15 @@ export class Router {
   root: HTMLElement | null;
   pageContext: __WebpackModuleApi.RequireContext;
   currentVNode: VNode | null; // Store the current virtual DOM node
+  stylesheetRef: HTMLLinkElement | null; // Reference to the stylesheet link element
 
   constructor(routes: any) {
     this.routes = routes;
     this.pageContext = require.context("../src/app", true, /page\.tsx$/); // Targeting .tsx files
     this.root = document.getElementById("root"); // Or any other container
+    this.stylesheetRef = document.getElementById(
+      "stylesheet-ref"
+    ) as HTMLLinkElement; // Reference to <link> element for styles
     this.handleRouteChange = this.handleRouteChange.bind(this); // Ensure proper `this` context
     this.currentVNode = null; // Initialize the virtual DOM node as null
     this.init();
@@ -38,7 +42,7 @@ export class Router {
           window.history.pushState(null, "", href);
           this.handleRouteChange();
         } else {
-          window.location.href = href
+          window.location.href = href;
         }
       }
     });
@@ -51,18 +55,27 @@ export class Router {
 
     try {
       const Page = await this.pageContext(componentPath).default;
+      this.updateCSS(path); // Update the CSS based on the route
       await this.updateRoute(Page); // Use vDOM update method
     } catch (error) {
       console.error(`Error loading component for path: ${path}`, error);
     }
   }
 
+  private updateCSS(path: string) {
+    if (this.stylesheetRef) {
+      const cssFileName =
+        path === "" ? "css/index.css" : `css/${path.substring(1)}.css`; // Get the correct CSS file
+      this.stylesheetRef.setAttribute("href", cssFileName); // Set the new href
+    }
+  }
+
   private async updateRoute(Page: () => Promise<VNode>) {
-    const newVNode = await Page(); // Get the virtual DOM for the new page    
+    const newVNode = await Page(); // Get the virtual DOM for the new page
 
     if (this.root) {
       // Clear the current content and render the new virtual DOM
-      this.root.innerHTML = ''; // Clear the existing content
+      this.root.innerHTML = ""; // Clear the existing content
       const realDOM = await vDOMRender(newVNode); // Render the vDOM to real DOM
       this.root.appendChild(realDOM); // Append the new content
     }

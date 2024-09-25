@@ -1,5 +1,7 @@
 # Osiris.JS
 
+> “Be industrious, let thine eyes be open, lest you become a beggar, for the man that is idle cometh not to honor.” - Muata Ashby
+
 ## Overview
 
 **Osiris** is a lightweight JavaScript framework designed for building dynamic web applications efficiently. It features a custom virtual DOM for optimal UI updates, a routing system akin to Next.js’s app router, and an intuitive event handling mechanism. Osiris allows you to use JSX for creating components seamlessly.
@@ -20,7 +22,7 @@ Osiris maintains a virtual representation of the DOM, allowing for efficient upd
 
 ### Using JSX
 
-Osiris supports JSX for creating elements. To use JSX, ensure your `tsconfig.json` is set up to handle JSX syntax.
+Osiris supports JSX for creating elements. To use JSX, ensure your `tsconfig.json` is set up to handle JSX syntax with the `perserve` option.
 
 #### Example: Creating a Component with JSX
 
@@ -60,6 +62,7 @@ const MyButton = () => {
   return button;
 };
 ```
+
 > You can also bind events to an element with `on` attributes that HTML5 supports, like so:
 
 ```typescript

@@ -5,25 +5,33 @@ import { VNode } from "./DOM/types";
  * The `Pulse` class is a reactive data-binding utility that synchronizes changes to its internal
  * data model with the DOM. It supports both objects and arrays, enabling reactivity and rendering
  * of data in the DOM.
- * 
+ *
  * @template T - Type of the data model which can be an object or an array.
  */
 export class Pulse<T extends object | Array<any>> {
   private proxyValue: T;
   private id: string;
   private listeners: Set<(value: T) => void>;
-  private template?: (data: T, index?: number, signalId?: string) => Promise<VNode>;
+  private template?: (
+    data: T,
+    index?: number,
+    signalId?: string
+  ) => Promise<VNode>;
   private rootElement: HTMLElement | null = null;
-  itemSignalRegistry: Map<string, Pulse<any>> // Registry for item pulses
+  itemSignalRegistry: Map<string, Pulse<any>>; // Registry for item pulses
 
   /**
    * Constructs a `Pulse` instance.
-   * 
+   *
    * @param initialValue - The initial value of the data model.
    * @param id - A unique identifier for this Pulse instance.
    * @param template - An optional template function to render the data.
    */
-  constructor(initialValue: T, id: string, template?: (data: T, index?: number, signalId?: string) => Promise<VNode>) {
+  constructor(
+    initialValue: T,
+    id: string,
+    template?: (data: T, index?: number, signalId?: string) => Promise<VNode>
+  ) {
     this.listeners = new Set();
     this.id = id;
     this.proxyValue = this.makeReactive(initialValue);
@@ -33,7 +41,7 @@ export class Pulse<T extends object | Array<any>> {
 
   /**
    * Makes the given value reactive by wrapping it with a Proxy.
-   * 
+   *
    * @param value - The value to make reactive.
    * @returns A reactive version of the value.
    */
@@ -45,7 +53,7 @@ export class Pulse<T extends object | Array<any>> {
         const result = Reflect.get(target, prop);
 
         if (Array.isArray(result)) {
-          return result.map(item => self.makeReactive(item));
+          return result.map((item) => self.makeReactive(item));
         } else if (result && typeof result === "object") {
           return self.makeReactive(result as T);
         }
@@ -72,25 +80,25 @@ export class Pulse<T extends object | Array<any>> {
           self.notifyListeners();
         }
         return true;
-      }
+      },
     });
   }
 
   /**
    * Sets a new value for the Pulse instance and triggers re-rendering.
-   * 
+   *
    * @param newValue - The new value to set.
    */
   set(newValue: T): void {
     this.proxyValue = this.makeReactive(newValue);
-    this.itemSignalRegistry.clear()
+    this.itemSignalRegistry.clear();
     this.notifyListeners();
-    this.performDOMRender()
+    this.performDOMRender();
   }
 
   /**
    * Gets the current value of the Pulse instance.
-   * 
+   *
    * @returns The current value.
    */
   get(): T {
@@ -99,7 +107,7 @@ export class Pulse<T extends object | Array<any>> {
 
   /**
    * Subscribes a listener function to changes in the Pulse value.
-   * 
+   *
    * @param listener - The listener function to subscribe.
    * @returns A function to unsubscribe the listener.
    */
@@ -114,14 +122,14 @@ export class Pulse<T extends object | Array<any>> {
    * Notifies all subscribed listeners of a change in the Pulse value.
    */
   private notifyListeners(): void {
-    this.listeners.forEach(listener => listener(this.proxyValue));
+    this.listeners.forEach((listener) => listener(this.proxyValue));
   }
 
   /**
-  * Attaches the Pulse instance to a DOM element and performs initial rendering.
-  * 
-  * @param element - The DOM element to attach to.
-  */
+   * Attaches the Pulse instance to a DOM element and performs initial rendering.
+   *
+   * @param element - The DOM element to attach to.
+   */
   attachTo(element: HTMLElement): void {
     this.rootElement = element;
     this.performDOMRender();
@@ -155,7 +163,7 @@ export class Pulse<T extends object | Array<any>> {
 
   /**
    * Renders an array value and updates the DOM elements.
-   * 
+   *
    * @param arr - The array to render.
    */
   private async updateArrayItem(index: number, newValue: any) {
@@ -181,7 +189,7 @@ export class Pulse<T extends object | Array<any>> {
 
   private async renderArray(arr: any[]): Promise<void> {
     // Only render the entire array on initial render or if explicitly called
-    this.rootElement.innerHTML = '';
+    this.rootElement.innerHTML = "";
 
     arr.forEach(async (item, index) => {
       const signalId = `${this.id}-${index}`;
@@ -200,11 +208,9 @@ export class Pulse<T extends object | Array<any>> {
     });
   }
 
-
-
   /**
    * Adds a new item to the array and renders it.
-   * 
+   *
    * @param item - The item to add.
    */
   addItem(item: any): void {
@@ -218,12 +224,16 @@ export class Pulse<T extends object | Array<any>> {
 
   /**
    * Updates an existing item in the array.
-   * 
+   *
    * @param index - The index of the item to update.
    * @param newValue - The new value to set.
    */
   updateItem(index: number, newValue: any): void {
-    if (Array.isArray(this.proxyValue) && index >= 0 && index < (this.proxyValue as any[]).length) {
+    if (
+      Array.isArray(this.proxyValue) &&
+      index >= 0 &&
+      index < (this.proxyValue as any[]).length
+    ) {
       (this.proxyValue as any[])[index] = newValue;
       this.updateArrayItem(index, newValue); // Update only the specified item
       this.notifyListeners();
@@ -232,7 +242,7 @@ export class Pulse<T extends object | Array<any>> {
 
   /**
    * Removes an item from the array by index and updates the DOM.
-   * 
+   *
    * @param index - The index of the item to remove.
    */
   removeItem(index: number): void {
@@ -242,7 +252,7 @@ export class Pulse<T extends object | Array<any>> {
       // Update the itemSignalRegistry and defer DOM updates until full render
       this.itemSignalRegistry.delete(`${this.id}-${index}`);
       this.notifyListeners();
-      this.performDOMRender();  // Trigger a full re-render after the array is modified
+      this.performDOMRender(); // Trigger a full re-render after the array is modified
     }
   }
 }
@@ -250,11 +260,14 @@ export class Pulse<T extends object | Array<any>> {
 /**
  * A global registry to keep track of pulses and their associated IDs.
  */
-export let pulseRegistry: Map<string, Pulse<any>> = new Map<string, Pulse<any>>();
+export let pulseRegistry: Map<string, Pulse<any>> = new Map<
+  string,
+  Pulse<any>
+>();
 
 /**
  * Generate a new pulse and add it to the global registry.
- * 
+ *
  * @param initialValue The initial value of the pulse.
  * @param id The unique ID of the pulse.
  * @param baseTemplate The base template for rendering the parent object.
@@ -263,14 +276,23 @@ export let pulseRegistry: Map<string, Pulse<any>> = new Map<string, Pulse<any>>(
 export const genPulse = <T extends object | Array<any>>(
   initialValue: T,
   id: string,
-  baseTemplate?: (data: any, index?: number, signalId?: string) => Promise<VNode>,
-  childTemplate?: (data: any, index?: number, signalId?: string) => Promise<VNode>
+  baseTemplate?: (
+    data: any,
+    index?: number,
+    signalId?: string
+  ) => Promise<VNode>,
+  childTemplate?: (
+    data: any,
+    index?: number,
+    signalId?: string
+  ) => Promise<VNode>
 ): Pulse<T> => {
   if (pulseRegistry.get(id)) {
-    return pulseRegistry.get(id)
+    return pulseRegistry.get(id);
   }
 
-  const template = Array.isArray(initialValue) && childTemplate ? childTemplate : baseTemplate;
+  const template =
+    Array.isArray(initialValue) && childTemplate ? childTemplate : baseTemplate;
   const pulse = new Pulse<T>(initialValue, id, template);
 
   pulseRegistry.set(id, pulse);

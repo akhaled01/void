@@ -1,4 +1,4 @@
-import { VNode, ElementVNode } from './types';
+import { VNode, ElementVNode } from "./types";
 
 /**
  * Creates a virtual DOM element.
@@ -16,12 +16,12 @@ export const createElement = <P = { [key: string]: any }>(
   const flatChildren: (VNode | string)[] = children.flat();
 
   const formattedChildren: VNode[] = flatChildren.map((child) =>
-    typeof child === 'object'
+    typeof child === "object"
       ? child
       : {
-        type: 'text',
-        content: child,
-      }
+          type: "text",
+          content: child,
+        }
   );
 
   return {
