@@ -1,17 +1,52 @@
 {
+  /**
+   * jsc: Configuration for the JavaScript compiler (SWC).
+   */
   "jsc": {
+    /**
+     * parser: Configuration for parsing the source code.
+     */
     "parser": {
+      /**
+       * syntax: Specifies the ECMAScript syntax version to use.
+       * Here, we are using the standard ECMAScript syntax.
+       */
       "syntax": "ecmascript",
+      /**
+       * jsx: Enables JSX syntax parsing.
+       * Note: Although JSX is enabled, this project does not utilize React.
+       * Instead, we define our own custom `createElement` function for rendering.
+       */
       "jsx": true
     },
+    /**
+     * transform: Configuration for transforming the code.
+     */
     "transform": {
-      "react": { // NOT USING REACT ON ALLAH BRO
+      "react": {
+        /**
+         * runtime: Specifies the runtime mode for React transformations.
+         * In this case, we are using the 'classic' runtime,
+         * which is compatible with our custom rendering logic.
+         */
         "runtime": "classic",
-        "pragma": "createElement" // This tells SWC to use our custom createElement function
+        /**
+         * pragma: Specifies the custom function to use for JSX transformation.
+         * We are using "createElement" instead of the default React.createElement,
+         * emphasizing that we are not using React in this project.
+         */
+        "pragma": "createElement"
       }
     }
   },
+  /**
+   * module: Configuration for module system.
+   */
   "module": {
+    /**
+     * type: Specifies the module type for the output code.
+     * Here, we are using ES6 modules for modern JavaScript compatibility.
+     */
     "type": "es6"
   }
 }

@@ -1,5 +1,7 @@
 import { VNode, ElementVNode, TextVNode } from "./types";
 
+type OsirisNode = HTMLElement | Text | DocumentFragment;
+
 /**
  * Renders a VNode to a real DOM node.
  *
@@ -8,7 +10,7 @@ import { VNode, ElementVNode, TextVNode } from "./types";
  */
 export const render = async (
   vNode: VNode
-): Promise<HTMLElement | Text | DocumentFragment> => {
+): Promise<OsirisNode> => {
   if (isTextVNode(vNode)) {
     const textVNode = vNode as TextVNode;
     return document.createTextNode(textVNode.content);
@@ -17,18 +19,21 @@ export const render = async (
     const { tag, props, children } = elementVNode;
     const element = document.createElement(tag);
 
-    if (Array.isArray(children)) {
-      for (const child of children) {
-        const childElement = await render(child);
-        if (childElement) {
-          element.appendChild(childElement);
-        }
-      }
-    }
-
-    // Set properties/attributes
+    // Handle properties/attributes
     if (props) {
+      // Handle inline styles
+      if (props.style && typeof props.style === "object") {
+        Object.entries(props.style).forEach(([styleName, styleValue]) => {
+          // Ensure styleValue is treated as a string
+          element.style[styleName as any] = String(styleValue);
+        });
+      }
+
+      // Set other properties/attributes
       for (const [key, value] of Object.entries(props)) {
+        // Skip the style property as it has been handled
+        if (key === "style") continue;
+
         // Handle event listeners
         if (key.startsWith("on") && typeof value === "function") {
           element.addEventListener(key.substring(2).toLowerCase(), value);
@@ -49,6 +54,17 @@ export const render = async (
         }
       }
     }
+
+    // Handle children
+    if (Array.isArray(children)) {
+      for (const child of children) {
+        const childElement = await render(child);
+        if (childElement) {
+          element.appendChild(childElement);
+        }
+      }
+    }
+
     return element;
   }
 

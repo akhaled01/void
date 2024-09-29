@@ -1,11 +1,10 @@
 /** @jsx createElement */
 import { VNode } from "Core/DOM/types";
+import { pulseRegistry } from "Core/pulse";
 import { Todo } from "interfaces";
 
 export const todoItemTemplate = async (
   todo: Todo,
-  index: number,
-  signalId?: string
 ): Promise<VNode> => {
   return (
     <div class={`todo-item${todo.completed ? " completed" : ""}`}>
@@ -17,7 +16,11 @@ export const todoItemTemplate = async (
       <span>{todo.title}</span>
       <button
         onClick={() => {
-          // pulseRegistry.get(signalId!)?.removeItem(index)
+          const todos = pulseRegistry.get("todo-list");
+          const todoIndex = todos
+            .get()
+            .findIndex((t: Todo) => t.id === todo.id);
+          todos.removeItem(todoIndex);
         }}
       >
         Delete

@@ -96,14 +96,14 @@ The `Pulse` class provides a reactive data structure that allows for efficient u
 - `private proxyValue: T`: The reactive value managed by the Pulse instance.
 - `private id: string`: Unique identifier for the Pulse instance.
 - `private listeners: Set<(value: T) => void>`: Set of subscriber callbacks that are notified on value changes.
-- `private template?: (data: T, index?: number, signalId?: string) => Promise<VNode>`: Template function for rendering the data.
+- `private template?: (data: T, index?: number, pulseID?: string) => Promise<VNode>`: Template function for rendering the data.
 - `private rootElement: HTMLElement | null`: The DOM element to which the Pulse instance is attached.
-- `itemSignalRegistry: Map<string, Pulse<any>>`: Registry for child Pulses associated with array items.
+- `childPulseMap: Map<string, Pulse<any>>`: Registry for child Pulses associated with array items.
 
 ### Constructor
 
 ```typescript
-constructor(initialValue: T, id: string, template?: (data: T, index?: number, signalId?: string) => Promise<VNode>)
+constructor(initialValue: T, id: string, template?: (data: T, index?: number, pulseID?: string) => Promise<VNode>)
 ```
 
 - **initialValue**: The initial value to be managed by the Pulse instance.
@@ -156,8 +156,8 @@ A global registry to keep track of all Pulse instances by their unique IDs.
 const genPulse = <T extends object | Array<any>>(
   initialValue: T,
   id: string,
-  baseTemplate?: (data: any, index?: number, signalId?: string) => Promise<VNode>,
-  childTemplate?: (data: any, index?: number, signalId?: string) => Promise<VNode>
+  baseTemplate?: (data: any, index?: number, pulseID?: string) => Promise<VNode>,
+  childTemplate?: (data: any, index?: number, pulseID?: string) => Promise<VNode>
 ): Pulse<T>
 ```
 

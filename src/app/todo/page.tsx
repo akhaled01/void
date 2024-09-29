@@ -6,7 +6,6 @@ import {
 } from "../../components/todoTemplates";
 import { genPulse } from "Core/pulse";
 import { Todo } from "interfaces";
-import { Signal } from "Core/signal";
 
 const Page = async () => {
   const todos = genPulse<Todo[]>([], "todo-list", todoItemTemplate);
@@ -19,7 +18,7 @@ const Page = async () => {
       completed: false,
       toggleComplete: function () {
         this.completed = !this.completed;
-        const todoIndex = todos.get().findIndex((t) => t.id === this.id);
+        const todoIndex = todos.get().findIndex((t: Todo) => t.id === this.id);
         todos.updateItem(todoIndex, this);
       },
     });
@@ -31,9 +30,9 @@ const Page = async () => {
     todos.set(activeTodos);
   };
 
-  Signal.listen(document, "DOMContentLoaded", () => {
+  document.listen("DOMContentLoaded", () => {
     todos.attachTo(document.getElementById("todo-list"));
-    Signal.listen(document, "keydown", (ev) => {
+    document.listen("keydown", (ev) => {
       if (ev.key === "Enter") {
         document.getElementById("add-todo-btn").click();
       }
