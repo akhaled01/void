@@ -95,6 +95,7 @@ export class Pulse<T extends object | Array<any>> {
    */
   set(newValue: T): void {
     this.proxyValue = this.makeReactive(newValue);
+    // console.log(this.proxyValue);
     this.childPulseMap.clear();
     this.notifyListeners();
     this.performDOMRender();
@@ -146,7 +147,7 @@ export class Pulse<T extends object | Array<any>> {
     if (this.template && this.rootElement) {
       if (Array.isArray(this.proxyValue)) {
         this.renderArray(this.proxyValue);
-      } else {
+      } else {        
         this.renderObject();
       }
     }
@@ -239,7 +240,7 @@ export class Pulse<T extends object | Array<any>> {
       index < (this.proxyValue as any[]).length
     ) {
       (this.proxyValue as any[])[index] = newValue;
-      this.updateArrayItem(index, newValue); // Update only the specified item
+      this.updateArrayItem(index, newValue);
       this.notifyListeners();
     }
   }
