@@ -8,9 +8,9 @@ type OsirisNode = HTMLElement | Text | DocumentFragment;
  * @param vNode - The virtual DOM node to render.
  * @returns The corresponding real DOM node.
  */
-export const render = async (
+export const render = (
   vNode: VNode
-): Promise<OsirisNode> => {
+): OsirisNode => {
   if (isTextVNode(vNode)) {
     const textVNode = vNode as TextVNode;
     return document.createTextNode(textVNode.content);
@@ -62,7 +62,7 @@ export const render = async (
     // Handle children
     if (Array.isArray(children)) {
       for (const child of children) {
-        const childElement = await render(child);
+        const childElement = render(child);
         if (childElement) {
           element.appendChild(childElement);
         }

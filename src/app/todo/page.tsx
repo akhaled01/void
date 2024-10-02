@@ -7,7 +7,7 @@ import {
 import { genPulse } from "Core/pulse";
 import { Todo } from "interfaces";
 
-const Page = async () => {
+const Page = () => {
   const todos = genPulse<Todo[]>([], "todo-list", todoItemTemplate);
 
   const addTodo = (title: string) => {
@@ -39,7 +39,7 @@ const Page = async () => {
     });
   });
 
-  return await todoListTemplate(addTodo, clearCompleted);
+  return  todoListTemplate(addTodo, clearCompleted);
 };
 
 export default Page;

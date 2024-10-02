@@ -12,11 +12,7 @@ export class Pulse<T extends object | Array<any>> {
   private proxyValue: T;
   private id: string;
   private listeners: Set<(value: T) => void>;
-  private template?: (
-    data: T,
-    index?: number,
-    pulseID?: string
-  ) => Promise<VNode>;
+  private template?: (data: T, index?: number, pulseID?: string) => VNode;
   private rootElement: HTMLElement | null = null;
   childPulseMap: Map<string, Pulse<any>>; // Registry for item pulses
 
@@ -30,7 +26,7 @@ export class Pulse<T extends object | Array<any>> {
   constructor(
     initialValue: T,
     id: string,
-    template?: (data: T, index?: number, pulseID?: string) => Promise<VNode>
+    template?: (data: T, index?: number, pulseID?: string) => VNode
   ) {
     this.listeners = new Set();
     this.id = id;
@@ -156,9 +152,9 @@ export class Pulse<T extends object | Array<any>> {
   /**
    * Renders an object value and replaces the current DOM element.
    */
-  private async renderObject(): Promise<void> {
-    const newVNode: VNode = await this.template!(this.proxyValue);
-    const newElement = await render(newVNode);
+  private renderObject(): void {
+    const newVNode: VNode = this.template!(this.proxyValue);
+    const newElement = render(newVNode);
 
     if (this.rootElement!.parentNode) {
       this.rootElement!.parentNode.replaceChild(newElement, this.rootElement!);
@@ -167,36 +163,39 @@ export class Pulse<T extends object | Array<any>> {
   }
 
   /**
-   * Renders an array value and updates the DOM elements.
+   * Updates or creates an item in the array.
    *
-   * @param arr - The array to render.
+   * @param index - The index of the item to update.
+   * @param newValue - The new value to set.
    */
-  private async updateArrayItem(index: number, newValue: any) {
+  private updateArrayItem(index: number, newValue: any) {
     const pulseID = `${this.id}-${index}`;
     let childPulse = this.childPulseMap.get(pulseID);
 
     if (childPulse) {
-      // Update only the specific item
+      // If the item exists, update its value
       childPulse.set(newValue);
-    } else {
-      // If the item doesn't exist, create a new Pulse and render it
-      childPulse = new Pulse(newValue, pulseID, this.template);
-      this.childPulseMap.set(pulseID, childPulse);
-
-      const newVNode: VNode = await this.template!(newValue, index, pulseID);
-      const newElement = await render(newVNode);
-
-      // Append the new element to the array container
-      this.rootElement?.appendChild(newElement);
-      childPulse.attachTo(newElement as HTMLElement);
     }
+
+    // else {
+    //   // If the item doesn't exist, create a new Pulse and render it
+    //   childPulse = new Pulse(newValue, pulseID, this.template);
+    //   this.childPulseMap.set(pulseID, childPulse);
+
+    //   const newVNode: VNode =  this.template!(newValue, index, pulseID);
+    //   const newElement =  render(newVNode);
+
+    //   // Append the new element to the array container
+    //   this.rootElement?.appendChild(newElement);
+    //   childPulse.attachTo(newElement as HTMLElement);
+    // }
   }
 
-  private async renderArray(arr: any[]): Promise<void> {
+  private renderArray(arr: any[]): void {
     // Only render the entire array on initial render or if explicitly called
     this.rootElement.innerHTML = "";
 
-    arr.forEach(async (item, index) => {
+    arr.forEach((item, index) => {
       const pulseID = `${this.id}-${index}`;
       let childPulse = this.childPulseMap.get(pulseID);
 
@@ -205,8 +204,8 @@ export class Pulse<T extends object | Array<any>> {
         this.childPulseMap.set(pulseID, childPulse);
       }
 
-      const newVNode: VNode = await this.template!(item, index, pulseID);
-      const newElement = await render(newVNode);
+      const newVNode: VNode = this.template!(item, index, pulseID);
+      const newElement = render(newVNode);
 
       this.rootElement?.appendChild(newElement);
       childPulse.attachTo(newElement as HTMLElement);
@@ -220,10 +219,48 @@ export class Pulse<T extends object | Array<any>> {
    */
   addItem(item: any): void {
     if (Array.isArray(this.proxyValue)) {
-      (this.proxyValue as any[]).push(item);
-      const newIndex = (this.proxyValue as any[]).length - 1;
-      this.updateArrayItem(newIndex, item); // Update only the new item
+      const newIndex = (this.proxyValue as any[]).length; // Calculate new index
+      (this.proxyValue as any[]).push(item); // Add the item to the array
+
+      // Call updateArrayItem only to create and attach the new child pulse
+      // this.updateArrayItem(newIndex, item);
+
+      const pulseID = `${this.id}-${newIndex}`;
+
+      let childPulse = new Pulse(item, pulseID, this.template);
+      this.childPulseMap.set(pulseID, childPulse);
+
+      const newVNode: VNode = this.template!(item, newIndex, pulseID);
+      const newElement = render(newVNode);
+
+      // Append the new element to the array container
+      this.rootElement?.appendChild(newElement);
+      childPulse.attachTo(newElement as HTMLElement);
+
+      // Rebuild the registry to ensure proper indexing and notify listeners
+      this.rebuildRegistry();
       this.notifyListeners();
+    }
+  }
+
+  /**
+   * Removes an item from the array by index and updates the DOM.
+   *
+   * @param index - The index of the item to remove.
+   */
+  removeItem(index: number): void {
+    if (Array.isArray(this.proxyValue)) {
+      const newArray = (this.proxyValue as any[]).filter((_, i) => i !== index);
+
+      // Update the proxyValue with the new array
+      this.proxyValue = this.makeReactive(newArray as unknown as T);
+
+      // Rebuild the child pulse registry after removing the item
+      this.rebuildRegistry();
+
+      // Notify listeners and trigger a full re-render after the array is modified
+      this.notifyListeners();
+      this.performDOMRender();
     }
   }
 
@@ -240,48 +277,13 @@ export class Pulse<T extends object | Array<any>> {
       index < (this.proxyValue as any[]).length
     ) {
       (this.proxyValue as any[])[index] = newValue;
-      this.updateArrayItem(index, newValue);
+      this.updateArrayItem(index, newValue); // Update only the specific item
       this.notifyListeners();
     }
   }
 
   /**
-   * Removes an item from the array by index and updates the DOM.
-   *
-   * @param index - The index of the item to remove.
-   */
-  removeItem(index: number): void {
-    if (Array.isArray(this.proxyValue)) {
-      // Remove the item from the array
-      // (this.proxyValue as any[]).splice(index, 1);
-      const newArray = (this.proxyValue as any[]).filter((_, i) => i !== index);
-
-      // Update the proxyValue with the new array
-      this.proxyValue = this.makeReactive(newArray as unknown as T);
-
-      // Remove the associated pulse and DOM element if it exists
-      const pulseID = `${this.id}-${index}`;
-      const childPulse = this.childPulseMap.get(pulseID);
-
-      // if (childPulse?.rootElement) {
-      //   childPulse.rootElement.remove();
-      // }
-
-      // Clean up the pulse from the map
-      this.childPulseMap.delete(pulseID);
-
-      // Rebuild the child pulse map to ensure proper indexing
-      this.rebuildRegistry();
-
-      // Notify listeners and trigger a full re-render after the array is modified
-      this.notifyListeners();
-      this.performDOMRender();
-    }
-  }
-
-  /**
-   * Rebuilds the child pulse registry after an array item is removed
-   * to account for index shifts and ensure proper reactivity.
+   * Rebuilds the child pulse registry to reset the indexes properly.
    */
   private rebuildRegistry(): void {
     this.childPulseMap.clear();
@@ -316,16 +318,8 @@ export const pulseRegistry: Map<string, Pulse<any>> = new Map<
 export const genPulse = <T extends object | Array<any>>(
   initialValue: T,
   id: string,
-  baseTemplate?: (
-    data: any,
-    index?: number,
-    pulseID?: string
-  ) => Promise<VNode>,
-  childTemplate?: (
-    data: any,
-    index?: number,
-    pulseID?: string
-  ) => Promise<VNode>
+  baseTemplate?: (data: any, index?: number, pulseID?: string) => VNode,
+  childTemplate?: (data: any, index?: number, pulseID?: string) => VNode
 ): Pulse<T> => {
   if (pulseRegistry.get(id)) {
     return pulseRegistry.get(id);

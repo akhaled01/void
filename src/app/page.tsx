@@ -1,6 +1,6 @@
 /** @jsx createElement */
 
-const Page = async () => {
+const Page = () => {
   return (
     <div className="container">
       <header>

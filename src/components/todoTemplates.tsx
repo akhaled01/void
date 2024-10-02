@@ -3,7 +3,7 @@ import { VNode } from "Core/DOM/types";
 import { pulseRegistry } from "Core/pulse";
 import { Todo } from "interfaces";
 
-export const todoItemTemplate = async (todo: Todo): Promise<VNode> => {
+export const todoItemTemplate = (todo: Todo): VNode => {
   return (
     <div className={`todo-item${todo.completed ? " completed" : ""}`}>
       <input
@@ -42,10 +42,10 @@ export const todoItemTemplate = async (todo: Todo): Promise<VNode> => {
   );
 };
 
-export const todoListTemplate = async (
+export const todoListTemplate = (
   addTodo: (title: string) => void,
   clearCompleted: () => void
-): Promise<VNode> => {
+): VNode => {
   return (
     <div className="todo-container">
       <h1 className="todo-header">Todo List</h1>

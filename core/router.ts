@@ -128,15 +128,15 @@ export class Router {
    * Handles route changes by loading the appropriate page component
    * and updating the displayed content.
    */
-  private async handleRouteChange() {
+  private handleRouteChange() {
     const path =
       window.location.pathname === "/" ? "" : window.location.pathname; // Normalize path
     const componentPath = `.${path}/page.tsx`; // Construct component path
 
     try {
-      const Page = await this.pageContext(componentPath).default; // Dynamically import the page component
+      const Page = this.pageContext(componentPath).default; // Dynamically import the page component
       this.updateCSS(path); // Update the CSS based on the route
-      await this.updateRoute(Page); // Render the new route
+      this.updateRoute(Page); // Render the new route
     } catch (error) {
       console.error(`Error loading component for path: ${path}`, error);
     }
@@ -160,12 +160,12 @@ export class Router {
    *
    * @param {() => Promise<VNode>} Page - The page component to render.
    */
-  private async updateRoute(Page: () => Promise<VNode>) {
-    const newVNode = await Page(); // Get the virtual DOM for the new page
+  private updateRoute(Page: () => VNode) {
+    const newVNode = Page(); // Get the virtual DOM for the new page
 
     if (this.root) {
       this.root.innerHTML = ""; // Clear existing content
-      const realDOM = await vDOMRender(newVNode); // Render the virtual DOM to real DOM
+      const realDOM = vDOMRender(newVNode); // Render the virtual DOM to real DOM
       this.root.appendChild(realDOM); // Append the new content to the root
     }
 
