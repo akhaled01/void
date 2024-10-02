@@ -5,22 +5,21 @@ import { Todo } from "interfaces";
 
 export const todoItemTemplate = async (todo: Todo): Promise<VNode> => {
   return (
-    <div class={`todo-item${todo.completed ? " completed" : ""}`}>
+    <div className={`todo-item${todo.completed ? " completed" : ""}`}>
       <input
         type="checkbox"
         checked={todo.completed}
         onChange={() => todo.toggleComplete()}
+        className="todo-checkbox"
       />
       <span
+        className="todo-title"
         onClick={() => {
-          const ntitle = prompt("enter new todo");
+          const ntitle = prompt("Enter new todo title");
           if (ntitle) {
             const todos = pulseRegistry.get("todo-list");
             const todoList = todos.get();
-            const todoIndex = todos
-              .get()
-              .findIndex((t: Todo) => t.id === todo.id);
-            // console.log({ title: ntitle, ...todo });
+            const todoIndex = todoList.findIndex((t: Todo) => t.id === todo.id);
             todoList[todoIndex].title = ntitle;
           }
         }}
@@ -28,6 +27,7 @@ export const todoItemTemplate = async (todo: Todo): Promise<VNode> => {
         {todo.title}
       </span>
       <button
+        className="delete-btn"
         onClick={() => {
           const todos = pulseRegistry.get("todo-list");
           const todoIndex = todos
@@ -47,22 +47,35 @@ export const todoListTemplate = async (
   clearCompleted: () => void
 ): Promise<VNode> => {
   return (
-    <div>
-      <input type="text" id="new-todo" placeholder="What needs to be done?" />
-      <button
-        id="add-todo-btn"
-        onClick={() => {
-          const input = document.getElementById("new-todo") as HTMLInputElement;
-          if (input.value.trim() && input.value.trim().length >= 3) {
-            addTodo(input.value);
-            input.value = "";
-          }
-        }}
-      >
-        Add
+    <div className="todo-container">
+      <h1 className="todo-header">Todo List</h1>
+      <div className="todo-input-container">
+        <input
+          type="text"
+          id="new-todo"
+          className="todo-input"
+          placeholder="What needs to be done?"
+        />
+        <button
+          id="add-todo-btn"
+          className="add-btn"
+          onClick={() => {
+            const input = document.getElementById(
+              "new-todo"
+            ) as HTMLInputElement;
+            if (input.value.trim() && input.value.trim().length >= 3) {
+              addTodo(input.value);
+              input.value = "";
+            }
+          }}
+        >
+          Add
+        </button>
+      </div>
+      <div id="todo-list" className="todo-list"></div>
+      <button className="clear-btn" onClick={clearCompleted}>
+        Clear Completed
       </button>
-      <div id="todo-list"></div>
-      <button onClick={clearCompleted}>Clear Completed</button>
     </div>
   );
 };

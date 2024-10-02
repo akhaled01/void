@@ -1,18 +1,116 @@
 body {
-  background-color: wheat;
+  background-color: #011921;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.todo-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.todo-header {
+  color: #333;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.todo-input-container {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.todo-input {
+  flex-grow: 1;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px 0 0 4px;
+}
+
+.add-btn {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 0 4px 4px 0;
+  transition: background-color 0.3s;
+}
+
+.add-btn:hover {
+  background-color: #45a049;
+}
+
+.todo-list {
+  margin-bottom: 1rem;
 }
 
 .todo-item {
   display: flex;
   align-items: center;
-  margin: 5px 0;
+  padding: 0.75rem;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
 }
 
 .todo-item.completed {
-  text-decoration: line-through;
-  color: gray;
+  opacity: 0.6;
 }
 
-input[type="text"] {
-  margin-right: 5px;
+.todo-checkbox {
+  margin-right: 0.75rem;
+}
+
+.todo-title {
+  flex-grow: 1;
+  cursor: pointer;
+}
+
+.todo-item.completed .todo-title {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  border: none;
+  color: white;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+.clear-btn {
+  background-color: #2196f3;
+  border: none;
+  color: white;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+.clear-btn:hover {
+  background-color: #1e88e5;
 }

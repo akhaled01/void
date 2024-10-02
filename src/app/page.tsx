@@ -8,12 +8,6 @@ const Page = async () => {
         <nav>
           <ul>
             <li>
-              <a href="#features">Features</a>
-            </li>
-            <li>
-              <a href="#docs">Docs</a>
-            </li>
-            <li>
               <a href="/todo">todoMVC</a>
             </li>
           </ul>

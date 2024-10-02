@@ -7,10 +7,14 @@ import { DocumentEventNames, Signal } from "./signal";
  * of pages using a virtual DOM approach.
  */
 export class Router {
-  root: HTMLElement | null; // The root element where pages will be rendered
-  pageContext: __WebpackModuleApi.RequireContext; // Context for dynamic imports of page components
-  currentVNode: VNode | null; // Store the current virtual DOM node
-  stylesheetRef: HTMLLinkElement | null; // Reference to the <link> element for stylesheets
+  /** The root element where pages will be rendered */
+  root: HTMLElement | null;
+  /** Context for dynamic imports of page components */
+  pageContext: __WebpackModuleApi.RequireContext;
+  /** Store the current virtual DOM node */
+  currentVNode: VNode | null;
+  /** Reference to the <link> element for stylesheets */
+  stylesheetRef: HTMLLinkElement | null;
 
   /**
    * Initializes the Router instance, sets up event listeners,
@@ -88,8 +92,8 @@ export class Router {
   /**
    * Checks if the given link is an internal link.
    *
-   * @param href - The href attribute of the anchor element.
-   * @returns True if the link is internal, false otherwise.
+   * @param {string} href - The href attribute of the anchor element.
+   * @returns {boolean} True if the link is internal, false otherwise.
    */
   private isInternalLink(href: string): boolean {
     const isSameOrigin = href.startsWith(window.location.origin);
@@ -141,7 +145,7 @@ export class Router {
   /**
    * Updates the stylesheet reference based on the current route.
    *
-   * @param path - The current route path.
+   * @param {string} path - The current route path.
    */
   private updateCSS(path: string) {
     if (this.stylesheetRef) {
@@ -154,7 +158,7 @@ export class Router {
   /**
    * Updates the displayed content by rendering the new virtual DOM node.
    *
-   * @param Page - The page component to render.
+   * @param {() => Promise<VNode>} Page - The page component to render.
    */
   private async updateRoute(Page: () => Promise<VNode>) {
     const newVNode = await Page(); // Get the virtual DOM for the new page
