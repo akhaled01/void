@@ -2,9 +2,9 @@
 
 const Page = async () => {
   return (
-    <div class="container">
+    <div className="container">
       <header>
-        <div class="logo ibm-plex-mono-regular-italic">OSIRIS.js</div>
+        <div className="logo ibm-plex-mono-regular-italic">OSIRIS.js</div>
         <nav>
           <ul>
             <li>
@@ -21,35 +21,35 @@ const Page = async () => {
       </header>
 
       <main>
-        <section class="hero">
+        <section className="hero">
           <h1>
             Build the Future with{" "}
-            <span class="ibm-plex-mono-semibold-italic">OSIRIS</span>
+            <span className="ibm-plex-mono-semibold-italic">OSIRIS</span>
           </h1>
-          <p class="tagline">
+          <p className="tagline">
             A minimal, powerful JavaScript framework for modern web applications
           </p>
-          <a href="https://github.com/akhaled01/OSIRIS.JS" class="cta">
+          <a href="https://github.com/akhaled01/OSIRIS.JS" className="cta">
             Get Started
           </a>
         </section>
 
-        <section class="features" id="features">
-          <div class="feature">
+        <section className="features" id="features">
+          <div className="feature">
             <h3>Lightning Fast</h3>
             <p>
               Osiris.js is optimized for speed, ensuring your applications load
               and run quickly.
             </p>
           </div>
-          <div class="feature">
+          <div className="feature">
             <h3>Easy to Learn</h3>
             <p>
               With a gentle learning curve, you'll be building amazing apps in
               no time.
             </p>
           </div>
-          <div class="feature">
+          <div className="feature">
             <h3>Unopinionated</h3>
             <p>
               Adapt Osiris.js to your needs with its modular and extensible

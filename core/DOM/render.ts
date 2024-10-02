@@ -34,6 +34,10 @@ export const render = async (
         // Skip the style property as it has been handled
         if (key === "style") continue;
 
+        if (key === "className") {
+          element.className = value
+        }
+
         // Handle event listeners
         if (key.startsWith("on") && typeof value === "function") {
           element.addEventListener(key.substring(2).toLowerCase(), value);

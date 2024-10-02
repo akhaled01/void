@@ -1,6 +1,7 @@
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import CopyPlugin from "copy-webpack-plugin";
+import ESLintWebpackPlugin from "eslint-webpack-plugin";
 import { resolve as _resolve, join, dirname } from "path";
 import { fileURLToPath } from "url";
 import webpack from "webpack";

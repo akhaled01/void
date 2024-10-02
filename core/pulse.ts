@@ -299,7 +299,7 @@ export class Pulse<T extends object | Array<any>> {
 /**
  * A global registry to keep track of pulses and their associated IDs.
  */
-export let pulseRegistry: Map<string, Pulse<any>> = new Map<
+export const pulseRegistry: Map<string, Pulse<any>> = new Map<
   string,
   Pulse<any>
 >();
