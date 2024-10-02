@@ -1,3 +1,5 @@
+import { createElement } from "Core/DOM/createElement";
+
 interface CommonProps {
   className?: string;
   id?: string;

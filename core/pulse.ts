@@ -147,7 +147,7 @@ export class Pulse<T extends object | Array<any>> {
     if (this.template && this.rootElement) {
       if (Array.isArray(this.proxyValue)) {
         this.renderArray(this.proxyValue);
-      } else {        
+      } else {
         this.renderObject();
       }
     }
@@ -253,44 +253,45 @@ export class Pulse<T extends object | Array<any>> {
   removeItem(index: number): void {
     if (Array.isArray(this.proxyValue)) {
       // Remove the item from the array
-      const removedItem = (this.proxyValue as any[]).splice(index, 1);
+      // (this.proxyValue as any[]).splice(index, 1);
+      const newArray = (this.proxyValue as any[]).filter((_, i) => i !== index);
 
-      if (removedItem.length) {
-        // Remove the associated signal if it exists
-        const pulseID = `${this.id}-${index}`;
-        const childPulse = this.childPulseMap.get(pulseID);
+      // Update the proxyValue with the new array
+      this.proxyValue = this.makeReactive(newArray as unknown as T);
 
-        // Remove the associated DOM element if it exists
-        if (childPulse?.rootElement) {
-          console.log("removing from DOM");
-          console.log(this.rootElement?.removeChild(childPulse.rootElement));
-        }
+      // Remove the associated pulse and DOM element if it exists
+      const pulseID = `${this.id}-${index}`;
+      const childPulse = this.childPulseMap.get(pulseID);
 
-        // Clean up the item from the signal registry
-        this.childPulseMap.delete(pulseID);
+      // if (childPulse?.rootElement) {
+      //   childPulse.rootElement.remove();
+      // }
 
-        // Rebuild the registry to adjust for index shifts
-        this.rebuildRegistry();
+      // Clean up the pulse from the map
+      this.childPulseMap.delete(pulseID);
 
-        // Notify listeners and trigger a full re-render after the array is modified
-        this.notifyListeners();
-        this.performDOMRender();
-      }
+      // Rebuild the child pulse map to ensure proper indexing
+      this.rebuildRegistry();
+
+      // Notify listeners and trigger a full re-render after the array is modified
+      this.notifyListeners();
+      this.performDOMRender();
     }
   }
 
   /**
-   * Rebuilds the signal registry after an array item is removed to account for index shifts.
+   * Rebuilds the child pulse registry after an array item is removed
+   * to account for index shifts and ensure proper reactivity.
    */
   private rebuildRegistry(): void {
     this.childPulseMap.clear();
     if (Array.isArray(this.proxyValue)) {
       this.proxyValue.forEach((item, index) => {
-        const pulseID = `${this.id}-${index}`;
-        this.childPulseMap.set(
-          pulseID,
-          new Pulse(item, pulseID, this.template)
-        );
+        if (item) {
+          const pulseID = `${this.id}-${index}`;
+          const childPulse = new Pulse(item, pulseID, this.template);
+          this.childPulseMap.set(pulseID, childPulse);
+        }
       });
     }
   }
