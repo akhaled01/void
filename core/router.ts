@@ -1,5 +1,6 @@
 import { render as vDOMRender } from "./DOM/render"; // Import vDOM render function
 import { VNode } from "./DOM/types"; // Import the type for your virtual DOM node
+import { pulseRegistry } from "./pulse";
 import { DocumentEventNames, Signal } from "./signal";
 
 /**
@@ -134,6 +135,7 @@ export class Router {
     const componentPath = `.${path}/page.tsx`; // Construct component path
 
     try {
+      pulseRegistry.clear() // clear all pulses
       const Page = this.pageContext(componentPath).default; // Dynamically import the page component
       this.updateCSS(path); // Update the CSS based on the route
       this.updateRoute(Page); // Render the new route

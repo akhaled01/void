@@ -23,7 +23,7 @@ const Page = () => {
           <p className="tagline">
             A minimal, powerful JavaScript framework for modern web applications
           </p>
-          <a href="https://github.com/akhaled01/Vortex.JS" className="cta">
+          <a href="https://github.com/akhaled01/vortex" className="cta">
             Get Started
           </a>
         </section>

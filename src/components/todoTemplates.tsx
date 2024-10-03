@@ -1,12 +1,19 @@
 /** @jsx createElement */
 import { VNode } from "Core/DOM/types";
-import { pulseRegistry } from "Core/pulse";
+import { genPulse, pulseRegistry } from "Core/pulse";
 import { Todo } from "interfaces";
 
 export const todoItemTemplate = (todo: Todo): VNode => {
   const activeTodos = pulseRegistry.get("active-todo-list");
   const completedTodos = pulseRegistry.get("completed-todo-list");
   const mainTodos = pulseRegistry.get("main-todo-list");
+
+  const isEditing = genPulse(
+    {
+      state: false,
+    },
+    "is-edit"
+  );
 
   return (
     <div className={`todo-item${todo.completed ? " completed" : ""}`}>
@@ -90,11 +97,7 @@ export const todoListTemplate = (
             const input = document.getElementById(
               "new-todo"
             ) as HTMLInputElement;
-            if (
-              input.value.trim() &&
-              input.value.trim().length >= 3 &&
-              input.value.trim().length <= 20
-            ) {
+            if (input.value.trim() && input.value.trim().length <= 20) {
               addTodo(input.value);
               input.value = "";
             }
@@ -109,7 +112,7 @@ export const todoListTemplate = (
           Clear Completed
         </button>
         <button className="complete-all-btn" onClick={completeAllTodos}>
-          Complete All
+          Toggle Complete All
         </button>
       </div>
       <div className="filter-buttons">
@@ -122,25 +125,41 @@ export const todoListTemplate = (
   );
 };
 
-
 const completeAllTodos = () => {
   const activeTodos = pulseRegistry.get("active-todo-list");
   const completedTodos = pulseRegistry.get("completed-todo-list");
+  const lastCompletedAll = pulseRegistry.get("last-complete-all");
 
-  // Get the current active todos
-  const activeList = activeTodos.get();
+  // If there are active todos, mark all as completed
+  if (!lastCompletedAll.get().toggled) {
+    const updatedTodos = activeTodos.get().map((todo: Todo) => {
+      todo.completed = true;
+      return todo;
+    });
 
-  // Mark all active todos as completed
-  const updatedTodos = activeList.map((todo: Todo) => {
-    todo.completed = true;
-    return todo;
-  });
+    completedTodos.set([...completedTodos.get(), ...updatedTodos]);
+    activeTodos.set([]);
 
-  // Move all active todos to completed
-  completedTodos.set([...completedTodos.get(), ...updatedTodos]);
-  activeTodos.set([]);
+    // Update the main todos to reflect the newly completed todos
+    const mainTodos = pulseRegistry.get("main-todo-list");
+    mainTodos.set(completedTodos.get());
 
-  // Update mainTodos to show the newly completed todos
-  const mainTodos = pulseRegistry.get("main-todo-list");
-  mainTodos.set(completedTodos.get());
+    // Set the toggle flag to true (meaning all are completed)
+    lastCompletedAll.set({ toggled: true });
+  } else {
+    const updatedTodos = completedTodos.get().map((todo: Todo) => {
+      todo.completed = false;
+      return todo;
+    });
+
+    activeTodos.set([...activeTodos.get(), ...updatedTodos]);
+    completedTodos.set([]);
+
+    // Update the main todos to reflect the newly active todos
+    const mainTodos = pulseRegistry.get("main-todo-list");
+    mainTodos.set(activeTodos.get());
+
+    // Set the toggle flag to false (meaning all are active)
+    lastCompletedAll.set({ toggled: false });
+  }
 };

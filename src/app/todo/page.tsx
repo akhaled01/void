@@ -19,6 +19,20 @@ const Page = () => {
     (c) => <div className="todo-current-count">Active Todos: {c.count}</div>
   );
 
+  const lastCompletedAll = genPulse(
+    {
+      toggled: false,
+    },
+    "last-complete-all"
+  );
+
+  const isAllTabActive = genPulse(
+    {
+      state: false,
+    },
+    "is-all-tab-active"
+  );
+
   // Subscribe to changes in active and completed todos to update the main rendered todos
   const updateMainTodos = (todos: Todo[]) => {
     mainTodos.set(todos);
@@ -65,18 +79,31 @@ const Page = () => {
       completedTodos.removeItem(completedIndex);
       activeTodos.addItem(todo);
     }
-    // updateMainTodos(todo.completed ? completedTodos.get() : activeTodos.get());
+
+    if (isAllTabActive.get().state) {
+      const allTodos = [...activeTodos.get(), ...completedTodos.get()];
+      mainTodos.set(allTodos);
+    }
   };
 
   const showActiveTodos = () => {
+    isAllTabActive.set({
+      state: false,
+    }); // Set "All" tab as inactive
     updateMainTodos(activeTodos.get());
   };
 
   const showCompletedTodos = () => {
+    isAllTabActive.set({
+      state: false,
+    });
     updateMainTodos(completedTodos.get());
   };
 
   const showAllTodos = () => {
+    isAllTabActive.set({
+      state: true,
+    });
     const allTodos = [...activeTodos.get(), ...completedTodos.get()];
     updateMainTodos(allTodos);
   };
