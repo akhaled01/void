@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "description": "An unopinionated JS framework",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akhaled01/vortex"
+  },
   "scripts": {
     "build": "eslint .; webpack build",
     "build:prod": "eslint .; webpack build --mode production",
