@@ -1,8 +1,8 @@
-# Osiris
+# Vortex
 
 > “Be industrious, let thine eyes be open, lest you become a beggar, for the man that is idle cometh not to honor.” – Muata Ashby
 
-Osiris is a lightweight, unopinionated front-end framework inspired by React and Next.js. It provides a Data Binding-based state management solution through a reactive system called **Pulses**, and a simple client-side router, making it ideal for modern web development.
+Vortex is a lightweight, unopinionated front-end framework inspired by React and Next.js. It provides a Data Binding-based state management solution through a reactive system called **Pulses**, and a simple client-side router, making it ideal for modern web development.
 
 ## Key Features
 
@@ -15,10 +15,10 @@ Osiris is a lightweight, unopinionated front-end framework inspired by React and
 
 ## Installation
 
-Start a new Osiris project using `npx`:
+Start a new Vortex project using `npx`:
 
 ```bash
-npx osiris@latest my-app
+npx vortex@latest my-app
 cd my-app
 npm install
 npm run dev
@@ -28,7 +28,7 @@ npm run dev
 
 ## DOM Rendering
 
-Osiris handles components in a way that's similar to React. Below is an example that demonstrates how to manage a to-do item:
+Vortex handles components in a way that's similar to React. Below is an example that demonstrates how to manage a to-do item:
 
 ```typescript
 export const todoItemTemplate = (todo: Todo): VNode => {
@@ -84,13 +84,13 @@ export const todoItemTemplate = (todo: Todo): VNode => {
 };
 ```
 
-The structure closely mimics React’s component system thanks to Osiris’s `createElement` and `render` functions. You can extend or modify them to handle custom bindings in your app. These functions are located in `core/DOM/render`.
+The structure closely mimics React’s component system thanks to Vortex's `createElement` and `render` functions. You can extend or modify them to handle custom bindings in your app. These functions are located in `core/DOM/render`.
 
 ---
 
 ## Routing
 
-Osiris comes with a simple router system. To define routes, create folders and add `page.tsx` files inside them.
+Vortex comes with a simple router system. To define routes, create folders and add `page.tsx` files inside them.
 
 Example folder structure:
 
@@ -112,7 +112,7 @@ Inside each `page.tsx`, define a `Page` functional component (similar to React) 
 
 ## Pulses
 
-The Pulse class powers state management in Osiris through a reactive system that tracks changes using proxies.
+The Pulse class powers state management in Vortex through a reactive system that tracks changes using proxies.
 
 ### Constructor
 
@@ -179,10 +179,10 @@ myPulse.attachTo(document.getElementById("user-info"));
 
 ## Event Management with Signals
 
-Osiris provides utility functions for managing events on `Document` and `HTMLElement` objects.
+Vortex provides utility functions for managing events on `Document` and `HTMLElement` objects.
 
 ```typescript
-import { Signal } from "osiris/signal";
+import { Signal } from "Core/signal";
 
 // Listening to events
 Signal.listen(document, "click", (event) => {
@@ -195,7 +195,7 @@ Signal.trigger(document, "customEvent");
 
 ### Event Listener Extensions
 
-Osiris extends `HTMLElement` and `Document` prototypes with the following utility methods:
+Vortex extends `HTMLElement` and `Document` prototypes with the following utility methods:
 
 - **`listen(eventType, callback)`**  
   Adds an event listener to an element.
@@ -219,4 +219,4 @@ document.listen("click", () => console.log("Document clicked!"));
 - **Dynamic URL Handling:** Coming in v1.1.
 - **Tailwind CSS Support:** Coming soon.
 
-Stay tuned for more updates as Osiris continues to evolve!
+Stay tuned for more updates as Vortex continues to evolve!

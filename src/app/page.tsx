@@ -4,7 +4,7 @@ const Page = () => {
   return (
     <div className="container">
       <header>
-        <div className="logo ibm-plex-mono-regular-italic">OSIRIS.js</div>
+        <div className="logo ibm-plex-mono-regular-italic">Vortex.js</div>
         <nav>
           <ul>
             <li>
@@ -18,12 +18,12 @@ const Page = () => {
         <section className="hero">
           <h1>
             Build the Future with{" "}
-            <span className="ibm-plex-mono-semibold-italic">OSIRIS</span>
+            <span className="ibm-plex-mono-semibold-italic">Vortex</span>
           </h1>
           <p className="tagline">
             A minimal, powerful JavaScript framework for modern web applications
           </p>
-          <a href="https://github.com/akhaled01/OSIRIS.JS" className="cta">
+          <a href="https://github.com/akhaled01/Vortex.JS" className="cta">
             Get Started
           </a>
         </section>
@@ -32,7 +32,7 @@ const Page = () => {
           <div className="feature">
             <h3>Lightning Fast</h3>
             <p>
-              Osiris.js is optimized for speed, ensuring your applications load
+              Vortex.js is optimized for speed, ensuring your applications load
               and run quickly.
             </p>
           </div>
@@ -46,7 +46,7 @@ const Page = () => {
           <div className="feature">
             <h3>Unopinionated</h3>
             <p>
-              Adapt Osiris.js to your needs with its modular and extensible
+              Adapt Vortex.js to your needs with its modular and extensible
               architecture.
             </p>
           </div>

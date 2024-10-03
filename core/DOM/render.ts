@@ -1,6 +1,6 @@
 import { VNode, ElementVNode, TextVNode } from "./types";
 
-type OsirisNode = HTMLElement | Text | DocumentFragment;
+type VortexNode = HTMLElement | Text | DocumentFragment;
 
 /**
  * Renders a VNode to a real DOM node.
@@ -8,9 +8,7 @@ type OsirisNode = HTMLElement | Text | DocumentFragment;
  * @param vNode - The virtual DOM node to render.
  * @returns The corresponding real DOM node.
  */
-export const render = (
-  vNode: VNode
-): OsirisNode => {
+export const render = (vNode: VNode): VortexNode => {
   if (isTextVNode(vNode)) {
     const textVNode = vNode as TextVNode;
     return document.createTextNode(textVNode.content);
@@ -35,8 +33,8 @@ export const render = (
         if (key === "style") continue;
 
         if (key === "className") {
-          element.className = value
-          continue
+          element.className = value;
+          continue;
         }
 
         // Handle event listeners
