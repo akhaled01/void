@@ -4,6 +4,10 @@ import { pulseRegistry } from "Core/pulse";
 import { Todo } from "interfaces";
 
 export const todoItemTemplate = (todo: Todo): VNode => {
+  const activeTodos = pulseRegistry.get("active-todo-list");
+  const completedTodos = pulseRegistry.get("completed-todo-list");
+  const mainTodos = pulseRegistry.get("main-todo-list");
+
   return (
     <div className={`todo-item${todo.completed ? " completed" : ""}`}>
       <input
@@ -17,10 +21,14 @@ export const todoItemTemplate = (todo: Todo): VNode => {
         onClick={() => {
           const ntitle = prompt("Enter new todo title");
           if (ntitle) {
-            const todos = pulseRegistry.get("todo-list");
-            const todoList = todos.get();
+            const todoList = activeTodos.get().concat(completedTodos.get());
             const todoIndex = todoList.findIndex((t: Todo) => t.id === todo.id);
             todoList[todoIndex].title = ntitle;
+            if (todo.completed) {
+              completedTodos.set(todoList.filter((t) => t.completed));
+            } else {
+              activeTodos.set(todoList.filter((t) => !t.completed));
+            }
           }
         }}
       >
@@ -29,11 +37,26 @@ export const todoItemTemplate = (todo: Todo): VNode => {
       <button
         className="delete-btn"
         onClick={() => {
-          const todos = pulseRegistry.get("todo-list");
-          const todoIndex = todos
-            .get()
-            .findIndex((t: Todo) => t.id === todo.id);
-          todos.removeItem(todoIndex);
+          if (todo.completed) {
+            // If the todo is in the completed list
+            const todoIndex = completedTodos
+              .get()
+              .findIndex((t: Todo) => t.id === todo.id);
+            console.log("removing completed");
+
+            completedTodos.removeItem(todoIndex);
+            // Update mainTodos to show only completed after removal
+            mainTodos.set(completedTodos.get());
+          } else {
+            // If the todo is in the active list
+            const todoIndex = activeTodos
+              .get()
+              .findIndex((t: Todo) => t.id === todo.id);
+            activeTodos.removeItem(todoIndex);
+            // Update mainTodos to show only completed after removal
+            mainTodos.set(activeTodos.get());
+          }
+          // mainTodos.set(activeTodos.get().concat(completedTodos.get()));
         }}
       >
         Delete
@@ -44,7 +67,11 @@ export const todoItemTemplate = (todo: Todo): VNode => {
 
 export const todoListTemplate = (
   addTodo: (title: string) => void,
-  clearCompleted: () => void
+  clearCompleted: () => void,
+  showActiveTodos: () => void,
+  // completeAll: () => void,
+  showCompletedTodos: () => void,
+  showAllTodos: () => void
 ): VNode => {
   return (
     <div className="todo-container">
@@ -63,7 +90,11 @@ export const todoListTemplate = (
             const input = document.getElementById(
               "new-todo"
             ) as HTMLInputElement;
-            if (input.value.trim() && input.value.trim().length >= 3) {
+            if (
+              input.value.trim() &&
+              input.value.trim().length >= 3 &&
+              input.value.trim().length <= 20
+            ) {
               addTodo(input.value);
               input.value = "";
             }
@@ -73,9 +104,43 @@ export const todoListTemplate = (
         </button>
       </div>
       <div id="todo-list" className="todo-list"></div>
-      <button className="clear-btn" onClick={clearCompleted}>
-        Clear Completed
-      </button>
+      <div id="mass-operations">
+        <button className="clear-btn" onClick={clearCompleted}>
+          Clear Completed
+        </button>
+        <button className="complete-all-btn" onClick={completeAllTodos}>
+          Complete All
+        </button>
+      </div>
+      <div className="filter-buttons">
+        <button onClick={showActiveTodos}>Active</button>
+        <button onClick={showCompletedTodos}>Completed</button>
+        <button onClick={showAllTodos}>All</button>
+      </div>
+      <h6 id="todo-current-count"></h6>
     </div>
   );
+};
+
+
+const completeAllTodos = () => {
+  const activeTodos = pulseRegistry.get("active-todo-list");
+  const completedTodos = pulseRegistry.get("completed-todo-list");
+
+  // Get the current active todos
+  const activeList = activeTodos.get();
+
+  // Mark all active todos as completed
+  const updatedTodos = activeList.map((todo: Todo) => {
+    todo.completed = true;
+    return todo;
+  });
+
+  // Move all active todos to completed
+  completedTodos.set([...completedTodos.get(), ...updatedTodos]);
+  activeTodos.set([]);
+
+  // Update mainTodos to show the newly completed todos
+  const mainTodos = pulseRegistry.get("main-todo-list");
+  mainTodos.set(completedTodos.get());
 };

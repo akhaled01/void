@@ -8,30 +8,86 @@ import { genPulse } from "Core/pulse";
 import { Todo } from "interfaces";
 
 const Page = () => {
-  const todos = genPulse<Todo[]>([], "todo-list", todoItemTemplate);
+  const activeTodos = genPulse<Todo[]>([], "active-todo-list");
+  const completedTodos = genPulse<Todo[]>([], "completed-todo-list");
+  const mainTodos = genPulse<Todo[]>([], "main-todo-list", todoItemTemplate);
+  const activeTodosCount = genPulse(
+    {
+      count: 0,
+    },
+    "active-count",
+    (c) => <div className="todo-current-count">Active Todos: {c.count}</div>
+  );
+
+  // Subscribe to changes in active and completed todos to update the main rendered todos
+  const updateMainTodos = (todos: Todo[]) => {
+    mainTodos.set(todos);
+  };
+
+  // Initialize with active todos
+  activeTodos.subscribe(updateMainTodos);
+  activeTodos.subscribe((todos) => {
+    activeTodosCount.set({
+      count: todos.length,
+    });
+  });
+
+  completedTodos.subscribe((val) => {
+    if (val.length === 0) {
+      mainTodos.set([]);
+    }
+  });
 
   const addTodo = (title: string) => {
     const id = uuidv4();
-    todos.addItem({
+    const newTodo: Todo = {
       id,
       title,
       completed: false,
       toggleComplete: function () {
         this.completed = !this.completed;
-        const todoIndex = todos.get().findIndex((t: Todo) => t.id === this.id);
-        todos.updateItem(todoIndex, this);
+        updateTodoInPulse(this);
       },
-    });
+    };
+
+    activeTodos.addItem(newTodo);
   };
 
-  // Fixed clearCompleted function
+  const updateTodoInPulse = (todo: Todo) => {
+    if (todo.completed) {
+      const activeIndex = activeTodos.get().findIndex((t) => t.id === todo.id);
+      activeTodos.removeItem(activeIndex);
+      completedTodos.addItem(todo);
+    } else {
+      const completedIndex = completedTodos
+        .get()
+        .findIndex((t) => t.id === todo.id);
+      completedTodos.removeItem(completedIndex);
+      activeTodos.addItem(todo);
+    }
+    // updateMainTodos(todo.completed ? completedTodos.get() : activeTodos.get());
+  };
+
+  const showActiveTodos = () => {
+    updateMainTodos(activeTodos.get());
+  };
+
+  const showCompletedTodos = () => {
+    updateMainTodos(completedTodos.get());
+  };
+
+  const showAllTodos = () => {
+    const allTodos = [...activeTodos.get(), ...completedTodos.get()];
+    updateMainTodos(allTodos);
+  };
+
   const clearCompleted = () => {
-    const activeTodos = todos.get().filter((t) => !t.completed);
-    todos.set(activeTodos);
+    completedTodos.set([]);
   };
 
   document.listen("DOMContentLoaded", () => {
-    todos.attachTo(document.getElementById("todo-list"));
+    mainTodos.attachTo(document.getElementById("todo-list"));
+    activeTodosCount.attachTo(document.getElementById("todo-current-count"));
     document.listen("keydown", (ev) => {
       if (ev.key === "Enter") {
         document.getElementById("add-todo-btn").click();
@@ -39,7 +95,13 @@ const Page = () => {
     });
   });
 
-  return  todoListTemplate(addTodo, clearCompleted);
+  return todoListTemplate(
+    addTodo,
+    clearCompleted,
+    showActiveTodos,
+    showCompletedTodos,
+    showAllTodos
+  );
 };
 
 export default Page;

@@ -36,6 +36,7 @@ export const render = (
 
         if (key === "className") {
           element.className = value
+          continue
         }
 
         // Handle event listeners

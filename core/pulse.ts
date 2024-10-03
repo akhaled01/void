@@ -230,12 +230,14 @@ export class Pulse<T extends object | Array<any>> {
       let childPulse = new Pulse(item, pulseID, this.template);
       this.childPulseMap.set(pulseID, childPulse);
 
-      const newVNode: VNode = this.template!(item, newIndex, pulseID);
-      const newElement = render(newVNode);
+      if (this.template) {
+        const newVNode: VNode = this.template!(item, newIndex, pulseID);
+        const newElement = render(newVNode);
 
-      // Append the new element to the array container
-      this.rootElement?.appendChild(newElement);
-      childPulse.attachTo(newElement as HTMLElement);
+        // Append the new element to the array container
+        this.rootElement?.appendChild(newElement);
+        childPulse.attachTo(newElement as HTMLElement);
+      }
 
       // Rebuild the registry to ensure proper indexing and notify listeners
       this.rebuildRegistry();
