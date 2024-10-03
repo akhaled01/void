@@ -1,5 +1,5 @@
 {
-  "name": "vortex",
+  "name": "@akhaled01/vortex",
   "version": "1.0.0",
   "type": "module",
   "description": "An unopinionated JS framework",

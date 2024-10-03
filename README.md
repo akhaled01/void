@@ -18,7 +18,7 @@ Vortex is a lightweight, unopinionated front-end framework inspired by React and
 Start a new Vortex project using `npx`:
 
 ```bash
-npx vortex@latest my-app
+npx @akhaled01/vortex my-app
 cd my-app
 npm install
 npm run dev
