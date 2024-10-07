@@ -20,9 +20,10 @@ jobs:
 
       - name: Navigate to void-docs, install dependencies, and build documentation
         run: |
+          npm install
           cd void-docs
           npm install  # Install dependencies in the void-docs folder
-          npm run build  # Build documentation, adjust based on your build script
+          npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
