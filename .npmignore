@@ -9,3 +9,6 @@ test/
 tests/
 coverage/
 src/app/todo/
+src/app/interfaces.ts
+void-docs
+void-docs/

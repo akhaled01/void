@@ -1,6 +1,6 @@
 import { VNode, ElementVNode, TextVNode } from "./types";
 
-type VortexNode = HTMLElement | Text | DocumentFragment;
+type voidNode = HTMLElement | Text | DocumentFragment;
 
 /**
  * Renders a VNode to a real DOM node.
@@ -8,7 +8,7 @@ type VortexNode = HTMLElement | Text | DocumentFragment;
  * @param vNode - The virtual DOM node to render.
  * @returns The corresponding real DOM node.
  */
-export const render = (vNode: VNode): VortexNode => {
+export const render = (vNode: VNode): voidNode => {
   if (isTextVNode(vNode)) {
     const textVNode = vNode as TextVNode;
     return document.createTextNode(textVNode.content);

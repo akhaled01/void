@@ -8,7 +8,22 @@ export type DocumentEventNames =
 type DOMNode = Document | HTMLElement; // Union type for a DOMNode
 
 /**
- * A utility class for managing DOM events on a `Document` or an `HTMLElement`.
+ * The signal class provides a cleaner interface for managing Document and HTMLElement events.
+ * It includes methods for listening to and triggering events on DOM nodes.
+ * @class
+ * @category Core
+ * @module Signal
+ * @example
+ * ```typescript
+ * import { Signal } from "core/signal";
+ * 
+ * const button = document.querySelector("button");
+ * 
+ * // Listen for a click event on the button
+ * const cleanup = Signal.listen(button, "click", (event) => {
+ *  console.log("Button clicked!");
+ * });
+ * ```
  */
 export class Signal {
   /**

@@ -1,0 +1,28 @@
+{
+    "entryPoints": [
+        "core/signal.ts",
+        "core/router.ts",
+        "core/pulse.ts",
+        "core/types/assets.d.ts",
+        "core/types/dom-signal.d.ts",
+        "core/types/jsx.d.ts",
+        "core/DOM/createElement.ts",
+        "core/DOM/render.ts",
+        "core/DOM/types.ts",
+    ],
+    "out": "void-docs/docs",
+    "plugin": [
+        "typedoc-plugin-markdown"
+    ],
+    "exclude": [
+        "**/node_modules/**/*",
+        "**/dist/**/*",
+        "**/build/**/*",
+        "**/docs/**/*",
+        "**/coverage/**/*",
+        "**/test/**/*",
+        "**/tests/**/*",
+        "**/example/**/*",
+        "**/examples"
+    ]
+}

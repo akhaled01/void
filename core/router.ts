@@ -4,7 +4,7 @@ import { pulseRegistry } from "./pulse";
 import { DocumentEventNames, Signal } from "./signal";
 
 /**
- * Router class to handle client-side routing and rendering
+ * The Router class to handle client-side routing and rendering
  * of pages using a virtual DOM approach.
  */
 export class Router {

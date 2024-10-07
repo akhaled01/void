@@ -1,33 +1,101 @@
 import { createElement } from "Core/DOM/createElement";
 
+/**
+ * This file provides a comprehensive TypeScript declaration for JSX elements,
+ * associating each HTML element with specific props to ensure type safety
+ * and a streamlined development experience when creating custom elements
+ * with the `createElement` function.
+ *
+ * The `CommonProps` interface serves as a base for all elements, defining
+ * properties that are generally applicable, such as `className`, `id`, and `style`.
+ *
+ * Additional interfaces like `AnchorProps`, `ImageProps`, and `ButtonProps`
+ * extend `CommonProps` to add more specialized attributes for certain elements.
+ */
+
+/**
+ * CommonProps defines the general properties that can be applied to most HTML elements.
+ */
 interface CommonProps {
+  /**
+   * A string representing one or more CSS classes to be applied to the element.
+   */
   className?: string;
+
+  /**
+   * A string representing the unique ID of the element.
+   */
   id?: string;
+
+  /**
+   * An object representing inline CSS styles, where the keys are CSS property names and
+   * the values are the corresponding styles (either strings or numbers).
+   */
   style?: { [key: string]: string | number };
 }
 
+/**
+ * Defines properties for the `<a>` (anchor) element, extending CommonProps.
+ */
 interface AnchorProps extends CommonProps {
+  /**
+   * The URL that the hyperlink points to.
+   */
   href?: string;
+
+  /**
+   * Specifies where to open the linked document. Common values are `_blank`, `_self`, etc.
+   */
   target?: string;
+
+  /**
+   * Specifies the relationship between the current document and the linked document.
+   */
   rel?: string;
 }
 
-// Define specific props for other elements as needed
+/**
+ * Defines properties for the `<img>` element, extending CommonProps.
+ */
 interface ImageProps extends CommonProps {
+  /**
+   * The image file source URL.
+   */
   src: string;
+
+  /**
+   * Alternative text for the image.
+   */
   alt?: string;
 }
 
+/**
+ * Defines properties for the `<button>` element, extending CommonProps.
+ */
 interface ButtonProps extends CommonProps {
+  /**
+   * A function that gets called when the button is clicked.
+   */
   onClick?: (event: MouseEvent) => void;
 }
 
+/**
+ * The JSX namespace defines intrinsic elements, which are standard HTML tags,
+ * and associates them with specific prop types.
+ * It includes various elements like <a>, <img>, <button>, and many others,
+ * with their corresponding props for strong typing support.
+ */
 declare namespace JSX {
   interface IntrinsicElements {
-    a: AnchorProps; // Using AnchorProps for <a> element
-    img: ImageProps; // Using ImageProps for <img> element
-    button: ButtonProps; // Using ButtonProps for <button> element
-    // Add more elements and their specific props as needed
+    /**
+     * Intrinsic elements represent standard HTML tags, such as `<a>`, `<div>`, etc.
+     * Each tag has its corresponding prop types defined for safe and intuitive usage.
+     */
+    a: AnchorProps; // <a> element with AnchorProps
+    img: ImageProps; // <img> element with ImageProps
+    button: ButtonProps; // <button> element with ButtonProps
+
+    // Various common HTML elements mapped to CommonProps
     abbr: CommonProps;
     address: CommonProps;
     area: CommonProps;
@@ -134,16 +202,29 @@ declare namespace JSX {
     wbr: CommonProps;
   }
 
+  /**
+   * The Element interface represents the type of a JSX element.
+   * It includes a `nodeType` property, typically used to identify the type of node in the DOM.
+   */
   interface Element {
-    // This type should match the output of your createElement function
+    /**
+     * The type of the node in the DOM, represented by a number.
+     */
     nodeType: number;
-    // You can define other properties if needed
   }
 }
 
-// Define the JSX namespace globally
+/**
+ * The `JSX.IntrinsicElements` interface can be globally extended
+ * to add custom elements or modify existing ones, making it flexible
+ * for custom rendering engines.
+ */
 declare global {
   namespace JSX {
+    /**
+     * This allows adding custom intrinsic elements or modifying the
+     * existing elements to fit your rendering engine or framework.
+     */
     interface IntrinsicElements {
       [elem: string]: CommonProps & { [key: string]: any };
     }

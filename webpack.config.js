@@ -78,8 +78,12 @@ export default {
         ],
       },
       {
-        test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
+        test: /\.css$/i,
+        use: [
+          MiniCssExtractPlugin.loader, // Extract CSS to separate files
+          "css-loader", // Process CSS
+          "postcss-loader", // Add PostCSS (with Tailwind CSS and Autoprefixer)
+        ],
       },
     ],
   },
@@ -97,10 +101,10 @@ export default {
             ignore: ["**/ignored-file.css"], // If you need to ignore specific files
           },
         },
-        {
-          from: _resolve(__dirname, "globals.css"),
-          to: _resolve(__dirname, "dist/globals.css"),
-        },
+        // {
+        //   from: _resolve(__dirname, "globals.css"),
+        //   to: _resolve(__dirname, "dist/globals.css"),
+        // },
         {
           from: _resolve(__dirname, "assets"),
           to: _resolve(__dirname, "dist/assets"),

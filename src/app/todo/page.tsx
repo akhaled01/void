@@ -19,12 +19,12 @@ const Page = () => {
     (c) => <div className="todo-current-count">Active Todos: {c.count}</div>
   );
 
-  const lastCompletedAll = genPulse(
-    {
-      toggled: false,
-    },
-    "last-complete-all"
-  );
+  // const lastCompletedAll = genPulse(
+  //   {
+  //     toggled: false,
+  //   },
+  //   "last-complete-all"
+  // );
 
   const isAllTabActive = genPulse(
     {

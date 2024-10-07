@@ -1,6 +1,6 @@
 /** @jsx createElement */
 import { VNode } from "Core/DOM/types";
-import { genPulse, pulseRegistry } from "Core/pulse";
+import { pulseRegistry } from "Core/pulse";
 import { Todo } from "interfaces";
 
 export const todoItemTemplate = (todo: Todo): VNode => {
@@ -8,12 +8,12 @@ export const todoItemTemplate = (todo: Todo): VNode => {
   const completedTodos = pulseRegistry.get("completed-todo-list");
   const mainTodos = pulseRegistry.get("main-todo-list");
 
-  const isEditing = genPulse(
-    {
-      state: false,
-    },
-    "is-edit"
-  );
+  // const isEditing = genPulse(
+  //   {
+  //     state: false,
+  //   },
+  //   "is-edit"
+  // );
 
   return (
     <div className={`todo-item${todo.completed ? " completed" : ""}`}>

@@ -24,6 +24,10 @@ export default [
       "dist/**/*",
       "jsx.d.ts",
       "dom-signals.d.ts",
+      "void-docs/**/*",
+      "cli.cjs",
+      "tailwind.config.js",
+      "postcss.config.js",
     ],
   },
   ...compat.extends(

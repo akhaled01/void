@@ -18,11 +18,11 @@ body {
   box-sizing: border-box;
 }
 
-.ibm-plex-mono-thin {
+/* .ibm-plex-mono-thin {
   font-family: "IBM Plex Mono", monospace;
   font-weight: 100;
   font-style: normal;
-}
+} */
 
 .glow-img {
   width: 300px;
@@ -158,11 +158,11 @@ code {
   gap: 0;
 }
 
-@keyframes rotate {
+/* @keyframes rotate {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
   }
-}
+} */

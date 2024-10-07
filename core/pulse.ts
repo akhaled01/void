@@ -316,6 +316,9 @@ export const pulseRegistry: Map<string, Pulse<any>> = new Map<
  * @param id The unique ID of the pulse.
  * @param baseTemplate The base template for rendering the parent object.
  * @param childTemplate A template specifically for child items, if applicable.
+ *
+ * @example
+ * const todos = genPulse([], "todos", todoListTemplate, () => <div>Child</div>);
  */
 export const genPulse = <T extends object | Array<any>>(
   initialValue: T,
