@@ -13,3 +13,4 @@ src/app/interfaces.ts
 void-docs
 void-docs/
 .github/workflows/
+typedoc.json
