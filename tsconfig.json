@@ -17,14 +17,18 @@
       ],
       "CSS/*": [
         "../css/*"
+      ],
+      "Assets/*": [
+        "../assets/*"
       ]
     }
   },
   "include": [
     "src/**/*",
     "core/**/*",
-    "*.d.ts"
-, "eslint.config.mjs"  ],
+    "*.d.ts",
+    "eslint.config.mjs"
+  ],
   "exclude": [
     "node_modules",
     "dist"

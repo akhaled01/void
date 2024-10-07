@@ -21,6 +21,7 @@ export default {
       Components: _resolve(__dirname, "src/components/"),
       Core: _resolve(__dirname, "core/"),
       CSS: _resolve(__dirname, "css/"),
+      Assets: _resolve(__dirname, "assets/"),
     },
   },
   module: {
@@ -69,6 +70,14 @@ export default {
         },
       },
       {
+        test: /\.(png|jpe?g|gif)$/i,
+        use: [
+          {
+            loader: "file-loader",
+          },
+        ],
+      },
+      {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, "css-loader"],
       },
@@ -91,6 +100,10 @@ export default {
         {
           from: _resolve(__dirname, "globals.css"),
           to: _resolve(__dirname, "dist/globals.css"),
+        },
+        {
+          from: _resolve(__dirname, "assets"),
+          to: _resolve(__dirname, "dist/assets"),
         },
       ],
     }),

@@ -1,11 +1,11 @@
 {
-  "name": "@akhaled01/vortex",
+  "name": "@akhaled01/void",
   "version": "1.0.1",
   "type": "module",
   "description": "An unopinionated JS framework",
   "repository": {
     "type": "git",
-    "url": "https://github.com/akhaled01/vortex"
+    "url": "https://github.com/akhaled01/void"
   },
   "scripts": {
     "build": "eslint .; webpack build",
@@ -17,7 +17,7 @@
     "vortex": "cli.cjs"
   },
   "author": "akhaled01",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@swc/core": "^1.7.24",
     "@types/node": "^22.5.4",
@@ -29,6 +29,7 @@
     "css-loader": "^7.1.2",
     "eslint": "^9.11.1",
     "eslint-webpack-plugin": "^4.2.0",
+    "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.6.0",
     "jsdoc": "^4.0.3",
     "mini-css-extract-plugin": "^2.9.1",

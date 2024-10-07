@@ -1,56 +1,37 @@
 /** @jsx createElement */
+import logo from "Assets/logo.png";
 
 const Page = () => {
+  document.listen("DOMContentLoaded", () => {
+    document.getElementById("void-text").listen("click", () => {
+      window.location.href = "https://github.com/akhaled01/void";
+    });
+  });
+
   return (
     <div className="container">
-      <header>
-        <div className="logo ibm-plex-mono-regular-italic">Vortex.js</div>
-        <nav>
-          <ul>
-            <li>
-              <a href="/todo">todoMVC</a>
-            </li>
-          </ul>
-        </nav>
-      </header>
-
       <main>
-        <section className="hero">
+        <div className="logo">
+          <img
+            src={logo}
+            alt="Void.js Logo"
+            style={{ width: "100px", height: "100px" }}
+            className="glow-img"
+            priority
+          />
+        </div>
+        <div className="cta">
           <h1>
-            Build the Future with{" "}
-            <span className="ibm-plex-mono-semibold-italic">Vortex</span>
+            This is a new{" "}
+            <span className="void-text ibm-plex-mono-thin" id="void-text">
+              Void.js
+            </span>{" "}
+            Application!
           </h1>
-          <p className="tagline">
-            A minimal, powerful JavaScript framework for modern web applications
+          <p className="description">
+            Start by editing <code>src/app/page.tsx</code>
           </p>
-          <a href="https://github.com/akhaled01/vortex" className="cta">
-            Get Started
-          </a>
-        </section>
-
-        <section className="features" id="features">
-          <div className="feature">
-            <h3>Lightning Fast</h3>
-            <p>
-              Vortex.js is optimized for speed, ensuring your applications load
-              and run quickly.
-            </p>
-          </div>
-          <div className="feature">
-            <h3>Easy to Learn</h3>
-            <p>
-              With a gentle learning curve, you'll be building amazing apps in
-              no time.
-            </p>
-          </div>
-          <div className="feature">
-            <h3>Unopinionated</h3>
-            <p>
-              Adapt Vortex.js to your needs with its modular and extensible
-              architecture.
-            </p>
-          </div>
-        </section>
+        </div>
       </main>
     </div>
   );
