@@ -29,5 +29,5 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./void-docs/static  # Path to your generated documentation
+          publish_dir: ./void-docs/build  # Path to your generated documentation
           publish_branch: gh-pages  # Branch for GitHub Pages
