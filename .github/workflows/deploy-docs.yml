@@ -1,0 +1,32 @@
+name: Build and Deploy Docs
+
+on:
+  push:
+    branches:
+      - main  # Change this if your default branch is different
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # Change to your required Node version
+
+      - name: Navigate to void-docs, install dependencies, and build documentation
+        run: |
+          cd void-docs
+          npm install  # Install dependencies in the void-docs folder
+          npm run build  # Build documentation, adjust based on your build script
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./void-docs/static  # Path to your generated documentation
+          publish_branch: gh-pages  # Branch for GitHub Pages

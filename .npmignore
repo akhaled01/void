@@ -12,3 +12,4 @@ src/app/todo/
 src/app/interfaces.ts
 void-docs
 void-docs/
+.github/workflows/
