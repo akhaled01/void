@@ -9,7 +9,7 @@ const config: Config = {
 
   // Set the production url of your site here
   url: "https://your-docusaurus-site.example.com",
-  baseUrl: "/void/",
+  baseUrl: "/",
   organizationName: "akhaled01",
   projectName: "void",
 
